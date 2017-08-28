@@ -6,7 +6,7 @@
 
     <!-- Shiro 的Web过滤器 -->
     <!--1、与web.xml对应的bean -->
-    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+    <bean id="shiroFilter" class="com.sft.chain.ShiroPermissionFactory">
         <property name="securityManager" ref="securityManager"/>
         <!-- 如果没有认证将要跳转的登陆地址，http可访问的url，如果不在表单认证过虑器FormAuthenticationFilter中指定此地址就为身份认证地址 -->
         <property name="loginUrl" value="${shiro-sso.loginUrl}"/>
@@ -35,18 +35,17 @@
         <!-- roles org.apache.shiro.web.filter.authz.RolesAuthorizationFilter参数可写多个,多个时必须加上引号,且参数之间用逗号分割,如/admins/user/**=roles["admin,guest"]
             当有多个参数时必须每个参数都通过才算通过,相当于hasAllRoles()方法 -->
         <!-- ssl org.apache.shiro.web.filter.authz.SslFilter表示安全的URL请求,协议为https -->
-        <!-- user org.apache.shiro.web.filter.authz.UserFilter表示必须存在用户,当登入操作时不做检查 -->
+        <!-- user org.apache.shiro.web.filter.authz.UserFilter表示必须存在用户,当登入操作时不做检查-->
         <property name="filterChainDefinitions">
             <value>
                 /ssoLogin = casFilter
                 /logout = logoutFilter
-                /** = user
             </value>
         </property>
 
     </bean>
 
-    <bean id="casFilter" class="com.sft.filter.MyCasFilter">
+    <bean id="casFilter" class="org.apache.shiro.cas.CasFilter">
         <!-- 配置验证成功是的URL -->
         <property name="successUrl" value="${shiro.successUrl}"/>
         <!-- 配置验证错误时的失败页面-->
@@ -65,8 +64,8 @@
         <!-- session 管理器 -->
         <property name="sessionManager" ref="sessionManager"/>
         <!--<property name="rememberMeManager" ref="rememberMeManager"/>-->
-        <!-- 缓存管理器 认证由子服务器管理,权限由redis管理-->
-        <property name="cacheManager" ref="shiroCacheManager"/>
+        <!-- 缓存管理器 认证由子服务器管理,权限由redis管理
+        <property name="cacheManager" ref="shiroCacheManager"/>-->
     </bean>
 
     <!--realm -->
@@ -123,5 +122,7 @@
     <bean id="shiroCacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
         <property name="cacheManagerConfigFile" value="classpath:cache/ehcache.xml"/>
     </bean>
+
+    <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
 
 </beans>
