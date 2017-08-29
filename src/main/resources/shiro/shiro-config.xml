@@ -10,9 +10,13 @@
         <property name="securityManager" ref="securityManager"/>
         <!-- 如果没有认证将要跳转的登陆地址，http可访问的url，如果不在表单认证过虑器FormAuthenticationFilter中指定此地址就为身份认证地址 -->
         <property name="loginUrl" value="${shiro-sso.loginUrl}"/>
+        <property name="unauthorizedUrl" value="${shiro.unauthorizedUrl}"/>
         <!-- 声明自定义的过滤器 -->
         <property name="filters">
             <map>
+                <entry key="perms">
+                    <bean class="com.sft.filter.RolePermissionsAuthorizationFilter"/>
+                </entry>
                 <!-- 添加casFilter到shiroFilter -->
                 <entry key="casFilter" value-ref="casFilter"/>
                 <entry key="logoutFilter" value-ref="logoutFilter"/>
@@ -49,7 +53,7 @@
         <!-- 配置验证成功是的URL -->
         <property name="successUrl" value="${shiro.successUrl}"/>
         <!-- 配置验证错误时的失败页面-->
-        <property name="failureUrl" value="${shiro.failureUrl}"/>
+        <property name="failureUrl" value="${shiro.unauthenticationUrl}"/>
     </bean>
 
     <bean id="logoutFilter" class="org.apache.shiro.web.filter.authc.LogoutFilter">
@@ -58,14 +62,14 @@
 
     <!-- 2、安全(权限)管理器 -->
     <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
-        <!-- 基于数据库登录校验的实现 com.persia.upm.ShiroDbRealm -->
+        <!-- 基于数据库登录校验的实现-->
         <property name="realm" ref="shiroDbRealm"/>
         <property name="subjectFactory" ref="casSubjectFactory"></property>
         <!-- session 管理器 -->
         <property name="sessionManager" ref="sessionManager"/>
         <!--<property name="rememberMeManager" ref="rememberMeManager"/>-->
-        <!-- 缓存管理器 认证由子服务器管理,权限由redis管理
-        <property name="cacheManager" ref="shiroCacheManager"/>-->
+        <!-- 缓存管理器 认证由子服务器管理,权限由redis管理-->
+        <property name="cacheManager" ref="shiroCacheManager"/>
     </bean>
 
     <!--realm -->

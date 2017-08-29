@@ -30,7 +30,7 @@ public class FilterChainDefinitionsServiceImpl implements FilterChainDefinitions
 
     public void reloadFilterChains() {
 
-        synchronized (permissFactory) {   // 强制同步，控制线程安全
+        synchronized (permissFactory) { // 强制同步，控制线程安全
             AbstractShiroFilter shiroFilter = null;
             try {
                 shiroFilter = (AbstractShiroFilter) permissFactory.getObject();
@@ -39,7 +39,7 @@ public class FilterChainDefinitionsServiceImpl implements FilterChainDefinitions
                 // 过滤管理器
                 DefaultFilterChainManager manager = (DefaultFilterChainManager) resolver.getFilterChainManager();
                 // 清除权限配置
-                // manager.getFilterChains().clear();
+                //manager.getFilterChains().clear();
                 permissFactory.getFilterChainDefinitionMap().clear();
                 // 重新设置权限
                 permissFactory.setFilterChainDefinitions(ShiroPermissionFactory.definition);// 传入配置中的filterchains

@@ -22,6 +22,8 @@
         <property name="properties" ref="configProperties111"/>
     </bean>
 
+    <context:component-scan base-package="com.sft.controller"/>
+
     <!-- db配置 -->
     <import resource="classpath:db/db-config.xml"/>
     <!-- shiro配置 -->

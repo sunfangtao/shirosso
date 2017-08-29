@@ -3,18 +3,25 @@ package com.sft.service.impl;
 import com.sft.db.SqlConnectionFactory;
 import com.sft.model.UserModel;
 import com.sft.service.UserService;
+import com.sft.util.DateUtil;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.cache.Cache;
+import org.apache.shiro.cache.ehcache.EhCacheManager;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.UUID;
 
 @Repository
 public class UserServiceImpl implements UserService {
 
     @Resource
     private SqlConnectionFactory sqlConnectionFactory;
+    @Resource
+    private EhCacheManager shiroCacheManager;
 
     public UserModel getUserByAccount(String account) {
         Connection con = null;
@@ -100,5 +107,44 @@ public class UserServiceImpl implements UserService {
             sqlConnectionFactory.closeConnetion(con, ps, null);
         }
         return changeUser;
+    }
+
+    public UserModel addUser(UserModel user) {
+        Connection con = null;
+        PreparedStatement ps = null;
+        StringBuffer sb = new StringBuffer();
+        sb.append("insert into plat_user (id,login_name,password,name,mobile,create_date,create_by) values (?,?,?,?,?,?,?)");
+
+        UserModel changeUser = null;
+        try {
+            con = sqlConnectionFactory.getConnection();
+            ps = con.prepareStatement(sb.toString());
+            ps.setString(1, UUID.randomUUID().toString());
+            ps.setString(2, user.getLogin_name());
+            ps.setString(3, user.getPassword());//md5
+            ps.setString(4, user.getName());
+            ps.setString(5, user.getMobile());
+            ps.setString(6, DateUtil.getCurDate());
+            ps.setString(7, user.getCreate_by());
+
+            int result = ps.executeUpdate();
+            if (result > 0) {
+                changeUser = getUserByAccount(user.getLogin_name());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            sqlConnectionFactory.closeConnetion(con, ps, null);
+        }
+        return changeUser;
+    }
+
+    public boolean clearAuthorizationInfo(String account) {
+        if (SecurityUtils.getSubject().isAuthenticated()) {
+            Cache<Object, Object> cache = shiroCacheManager.getCache("authorizationCache");
+            cache.remove(account);
+            return true;
+        }
+        return false;
     }
 }
