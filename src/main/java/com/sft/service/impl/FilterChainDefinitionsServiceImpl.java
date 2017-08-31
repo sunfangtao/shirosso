@@ -1,9 +1,9 @@
 package com.sft.service.impl;
 
-import com.sft.bean.ResourcePermission;
 import com.sft.chain.ShiroPermissionFactory;
+import com.sft.dao.RolePermissionDao;
+import com.sft.model.Permission;
 import com.sft.service.FilterChainDefinitionsService;
-import com.sft.service.ResourceService;
 import org.apache.shiro.util.StringUtils;
 import org.apache.shiro.web.filter.mgt.DefaultFilterChainManager;
 import org.apache.shiro.web.filter.mgt.PathMatchingFilterChainResolver;
@@ -26,7 +26,7 @@ public class FilterChainDefinitionsServiceImpl implements FilterChainDefinitions
     @Autowired
     private ShiroPermissionFactory permissFactory;
     @Resource
-    private ResourceService resourceDao;
+    private RolePermissionDao rolePermissionDao;
 
     public void reloadFilterChains() {
 
@@ -44,17 +44,19 @@ public class FilterChainDefinitionsServiceImpl implements FilterChainDefinitions
                 // 重新设置权限
                 permissFactory.setFilterChainDefinitions(ShiroPermissionFactory.definition);// 传入配置中的filterchains
 
-                List<ResourcePermission> permissions = resourceDao.getAllResourcePer();
+                List<Permission> permissions = rolePermissionDao.getUrlPermissions();
                 // 循环Resource的url,逐个添加到section中。section就是filterChainDefinitionMap,
                 // 里面的键就是链接URL,值就是存在什么条件才能访问该链接
 
                 Map<String, String> map = new HashMap<String, String>();
-                for (Iterator<ResourcePermission> it = permissions.iterator(); it.hasNext(); ) {
-                    ResourcePermission resource = it.next();
-                    // 如果不为空值添加到section中
-                    if (StringUtils.hasText(resource.getUrl()) && StringUtils.hasText(resource.getPermission())) {
-                        manager.createChain(resource.getUrl(), MessageFormat.format(PREMISSION_STRING, resource.getPermission()));
-                        map.put(resource.getUrl(), MessageFormat.format(PREMISSION_STRING, resource.getPermission()));
+                if (permissions != null) {
+                    for (Iterator<Permission> it = permissions.iterator(); it.hasNext(); ) {
+                        Permission resource = it.next();
+                        // 如果不为空值添加到section中
+                        if (StringUtils.hasText(resource.getUrl()) && StringUtils.hasText(resource.getPermission())) {
+                            manager.createChain(resource.getUrl(), MessageFormat.format(PREMISSION_STRING, resource.getPermission()));
+                            map.put(resource.getUrl(), MessageFormat.format(PREMISSION_STRING, resource.getPermission()));
+                        }
                     }
                 }
                 permissFactory.setFilterChainDefinitionMap(map);

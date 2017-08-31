@@ -1,10 +1,18 @@
-package com.sft.service;
+package com.sft.dao;
 
 import com.sft.model.UserModel;
 
 import java.util.List;
 
-public interface UserService {
+public interface UserDao {
+
+    /**
+     * 获取用户信息
+     *
+     * @param account
+     * @return
+     */
+    public UserModel getUserByAccount(String account);
 
     /**
      * 获取用户信息
@@ -20,7 +28,7 @@ public interface UserService {
      * @param user
      * @return
      */
-    public boolean updateUser(UserModel user, String by);
+    public boolean updateUser(UserModel user);
 
     /**
      * 添加新用户
@@ -46,4 +54,5 @@ public interface UserService {
      * @return
      */
     public List<UserModel> getSubUserById(String userId);
+
 }

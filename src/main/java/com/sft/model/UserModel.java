@@ -2,6 +2,7 @@ package com.sft.model;
 
 public class UserModel {
     private String id;//'编号',
+    private String parent_id;// 父用户编号
     private String login_name;//'登录名',
     private String password;//'密码',
     private String name;//'姓名',
@@ -24,6 +25,14 @@ public class UserModel {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getParent_id() {
+        return parent_id;
+    }
+
+    public void setParent_id(String parent_id) {
+        this.parent_id = parent_id;
     }
 
     public String getLogin_name() {

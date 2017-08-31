@@ -1,11 +1,11 @@
-package com.sft.service;
+package com.sft.dao;
 
 import com.sft.model.Permission;
 import com.sft.model.Role;
 
 import java.util.List;
 
-public interface RolePermissionService {
+public interface RolePermissionDao {
 
     /**
      * 新建角色
@@ -16,6 +16,14 @@ public interface RolePermissionService {
     public boolean addRole(Role role);
 
     /**
+     * 更新角色
+     *
+     * @param role
+     * @return
+     */
+    public boolean updateRole(Role role);
+
+    /**
      * 获取用户的角色
      *
      * @param userId
@@ -24,14 +32,13 @@ public interface RolePermissionService {
     public List<Role> getRoles(String userId);
 
     /**
-     * 更新用户的角色
+     * 更新用户角色
      *
      * @param userId
      * @param roleIdList
-     * @param by
      * @return
      */
-    public boolean updateUserRoles(String userId, List<String> roleIdList, String by);
+    public boolean updateUserRoles(String userId, List<String> roleIdList, String time, String by);
 
     /**
      * 新建权限
@@ -40,6 +47,14 @@ public interface RolePermissionService {
      * @return
      */
     public boolean addPermission(Permission permission);
+
+    /**
+     * 更新权限
+     *
+     * @param permission
+     * @return
+     */
+    public boolean updatePermission(Permission permission);
 
     /**
      * 获取用户的权限

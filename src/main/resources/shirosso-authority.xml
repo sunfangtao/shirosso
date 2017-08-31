@@ -2,8 +2,8 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="
-	   http://www.springframework.org/schema/beans
+       xmlns:p="http://www.springframework.org/schema/p" xmlns:c="http://www.springframework.org/schema/c"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context
        http://www.springframework.org/schema/context/spring-context.xsd">
@@ -22,7 +22,9 @@
         <property name="properties" ref="configProperties111"/>
     </bean>
 
-    <context:component-scan base-package="com.sft.controller"/>
+    <bean id="passwordEncoder" class="com.sft.util.DefaultPasswordEncoder"
+          c:encodingAlgorithm="MD5"
+          p:characterEncoding="UTF-8"/>
 
     <!-- db配置 -->
     <import resource="classpath:db/db-config.xml"/>

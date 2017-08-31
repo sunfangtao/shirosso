@@ -2,7 +2,7 @@ package com.sft.model;
 
 public class Permission {
     private String id;//'编号',
-    private String server_id;//'业务子服务编号',
+    private String module_id;//'业务子服务模块编号',
     private String name;//'别名',
     private String permission;//'权限标识',
     private String create_by;//'创建者',
@@ -11,6 +11,8 @@ public class Permission {
     private String update_date;//'更新时间',
     private String remarks;//'备注信息',
     private int del_flag;//'删除标记',
+    private String url;//'链接地址',
+    private String type;//'链接映射标识'
 
     public String getId() {
         return id;
@@ -20,12 +22,12 @@ public class Permission {
         this.id = id;
     }
 
-    public String getServer_id() {
-        return server_id;
+    public String getModule_id() {
+        return module_id;
     }
 
-    public void setServer_id(String server_id) {
-        this.server_id = server_id;
+    public void setModule_id(String module_id) {
+        this.module_id = module_id;
     }
 
     public String getName() {
@@ -90,5 +92,21 @@ public class Permission {
 
     public void setDel_flag(int del_flag) {
         this.del_flag = del_flag;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

@@ -1,7 +1,7 @@
 package com.sft.chain;
 
-import com.sft.bean.ResourcePermission;
-import com.sft.service.ResourceService;
+import com.sft.model.Permission;
+import com.sft.service.RolePermissionService;
 import org.apache.shiro.config.Ini;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.util.CollectionUtils;
@@ -15,7 +15,7 @@ import java.util.List;
 public class ShiroPermissionFactory extends ShiroFilterFactoryBean {
 
     @Autowired
-    private ResourceService resourceDao;
+    private RolePermissionService rolePermissionService;
 
     public static String definition;
 
@@ -35,14 +35,16 @@ public class ShiroPermissionFactory extends ShiroFilterFactoryBean {
             section = ini.getSection("");
         }
 
-        List<ResourcePermission> permissions = resourceDao.getAllResourcePer();
+        List<Permission> permissions = rolePermissionService.getUrlPermissions();
         // 循环Resource的url,逐个添加到section中。section就是filterChainDefinitionMap,
         // 里面的键就是链接URL,值就是存在什么条件才能访问该链接
-        for (Iterator<ResourcePermission> it = permissions.iterator(); it.hasNext(); ) {
-            ResourcePermission resource = it.next();
-            // 如果不为空值添加到section中
-            if (StringUtils.hasText(resource.getUrl()) && StringUtils.hasText(resource.getPermission())) {
-                section.put(resource.getUrl(), MessageFormat.format(PREMISSION_STRING, resource.getPermission()));
+        if (permissions != null) {
+            for (Iterator<Permission> it = permissions.iterator(); it.hasNext(); ) {
+                Permission resource = it.next();
+                // 如果不为空值添加到section中
+                if (StringUtils.hasText(resource.getUrl()) && StringUtils.hasText(resource.getPermission())) {
+                    section.put(resource.getUrl(), MessageFormat.format(PREMISSION_STRING, resource.getPermission()));
+                }
             }
         }
         section.put("/**", "user");
