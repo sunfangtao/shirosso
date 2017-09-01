@@ -41,6 +41,15 @@ public interface RolePermissionDao {
     public boolean updateUserRoles(String userId, List<String> roleIdList, String time, String by);
 
     /**
+     * 更新角色权限
+     *
+     * @param roleId
+     * @param permissionId
+     * @return
+     */
+    public boolean updateRolePermission(String roleId, List<String> permissionId);
+
+    /**
      * 新建权限
      *
      * @param permission
@@ -71,6 +80,14 @@ public interface RolePermissionDao {
      * @return
      */
     public List<String> getRolePermissions(String roleId);
+
+    /**
+     * 获取角色的权限
+     *
+     * @param roleId
+     * @return
+     */
+    public List<Permission> getRolePermissionsList(String roleId);
 
     /**
      * 获取资源权限

@@ -1,10 +1,10 @@
 package com.sft.dao.impl;
 
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 import com.sft.dao.RolePermissionDao;
 import com.sft.db.SqlConnectionFactory;
 import com.sft.model.Permission;
 import com.sft.model.Role;
-import com.sft.util.DateUtil;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
@@ -13,7 +13,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Repository
 public class RolePermissionDaoImpl implements RolePermissionDao {
@@ -22,6 +21,7 @@ public class RolePermissionDaoImpl implements RolePermissionDao {
     private SqlConnectionFactory sqlConnectionFactory;
 
     public boolean addRole(Role role) {
+        String s = "";
         Connection con = null;
         PreparedStatement ps = null;
         StringBuffer sb = new StringBuffer();
@@ -29,17 +29,17 @@ public class RolePermissionDaoImpl implements RolePermissionDao {
         try {
             con = sqlConnectionFactory.getConnection();
             ps = con.prepareStatement(sb.toString());
-            ps.setString(1, UUID.randomUUID().toString());
+            ps.setString(1, role.getId());
             ps.setString(2, role.getName());
             ps.setInt(3, role.getDel_flag());
             ps.setString(4, role.getRemarks());
             ps.setString(5, role.getCreate_by());
-            ps.setString(6, DateUtil.getCurDate());
+            ps.setString(6, role.getCreate_date());
             int result = ps.executeUpdate();
             if (result > 0) {
                 return true;
             }
-        } catch (Exception e) {
+        } catch(Exception e) {
             e.printStackTrace();
         } finally {
             sqlConnectionFactory.closeConnetion(con, ps, null);
@@ -54,6 +54,8 @@ public class RolePermissionDaoImpl implements RolePermissionDao {
         sb.append("update role set ");
         if (role.getDel_flag() != 0) {
             sb.append(" del_flag = 1");
+        } else {
+            sb.append(" del_flag = 0");
         }
         if (role.getName() != null) {
             sb.append(" name = '").append(role.getName()).append("'");
@@ -137,6 +139,35 @@ public class RolePermissionDaoImpl implements RolePermissionDao {
         return false;
     }
 
+    public boolean updateRolePermission(String roleId, List<String> permissionId) {
+        Connection con = null;
+        PreparedStatement ps = null;
+        StringBuffer sb = new StringBuffer();
+        sb.append("insert into role_permission (role_id,permission_id) values ");
+
+        int length = permissionId.size();
+        for (int i = 0; i < length; i++) {
+            sb.append("(").append(roleId).append(",");
+            sb.append(permissionId.get(i)).append(")");
+            if (i < length - 1) {
+                sb.append(",");
+            }
+        }
+        try {
+            con = sqlConnectionFactory.getConnection();
+            ps = con.prepareStatement(sb.toString());
+            int result = ps.executeUpdate();
+            if (result > 0) {
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            sqlConnectionFactory.closeConnetion(con, ps, null);
+        }
+        return false;
+    }
+
     public boolean addPermission(Permission permission) {
         if (permission == null) {
             return false;
@@ -148,12 +179,12 @@ public class RolePermissionDaoImpl implements RolePermissionDao {
         try {
             con = sqlConnectionFactory.getConnection();
             ps = con.prepareStatement(sb.toString());
-            ps.setString(1, UUID.randomUUID().toString());
+            ps.setString(1, permission.getId());
             ps.setString(2, permission.getModule_id());
             ps.setString(3, permission.getName());
             ps.setString(4, permission.getPermission());
             ps.setString(5, permission.getCreate_by());
-            ps.setString(6, DateUtil.getCurDate());
+            ps.setString(6, permission.getCreate_date());
             ps.setString(7, permission.getRemarks());
             ps.setInt(8, permission.getDel_flag() != 0 ? 1 : 0);
             ps.setString(9, permission.getUrl());
@@ -209,6 +240,8 @@ public class RolePermissionDaoImpl implements RolePermissionDao {
             if (result > 0) {
                 return true;
             }
+        } catch (MySQLIntegrityConstraintViolationException e) {
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -231,6 +264,37 @@ public class RolePermissionDaoImpl implements RolePermissionDao {
         sb.append("select p.permission from role_permission rp,permission p where rp.role_id = ?");
         sb.append(" and rp.permission_id = p.id and p.del_flag = 0");
         return getPermissions(sb.toString(), roleId);
+    }
+
+    public List<Permission> getRolePermissionsList(String roleId) {
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        List<Permission> permissionsList = new ArrayList<Permission>();
+
+        StringBuffer sb = new StringBuffer();
+        sb.append("select p.permission,p.remarks,p.module_id,p.name,p.id from role_permission rp,permission p where rp.role_id = ?");
+        sb.append(" and rp.permission_id = p.id and p.del_flag = 0");
+        try {
+            con = sqlConnectionFactory.getConnection();
+            ps = con.prepareStatement(sb.toString());
+            ps.setString(1, roleId);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                Permission permission = new Permission();
+                permission.setRemarks(rs.getString("remarks"));
+                permission.setModule_id(rs.getString("module_id"));
+                permission.setName(rs.getString("name"));
+                permission.setId(rs.getString("id"));
+                permission.setPermission(rs.getString("permission"));
+                permissionsList.add(permission);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            sqlConnectionFactory.closeConnetion(con, ps, rs);
+        }
+        return permissionsList;
     }
 
     private List<String> getPermissions(String sql, String key) {

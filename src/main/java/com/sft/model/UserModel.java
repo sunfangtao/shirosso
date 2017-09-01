@@ -19,6 +19,17 @@ public class UserModel {
     private String remarks;//'备注信息',
     private int del_flag;//'删除标记',
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof UserModel) {
+            UserModel user = (UserModel) obj;
+            if (user.id.equals(id)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public String getId() {
         return id;
     }

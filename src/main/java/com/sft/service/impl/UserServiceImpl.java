@@ -23,6 +23,10 @@ public class UserServiceImpl implements UserService {
         return userDao.getUserById(userId);
     }
 
+    public UserModel getUserByAccount(String account) {
+        return userDao.getUserByAccount(account);
+    }
+
     public boolean updateUser(UserModel user, String by) {
         // userId ="" 表示用户登录更新数据
         if (user.getDel_flag() != 0) {

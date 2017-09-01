@@ -7,8 +7,10 @@
 package com.sft.realm;
 
 import com.sft.model.Role;
+import com.sft.model.UserModel;
 import com.sft.service.RolePermissionService;
 import com.sft.service.UserService;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -62,9 +64,9 @@ public class ShiroSSORealm extends CasRealm {
 
         AuthenticationInfo authc = super.doGetAuthenticationInfo(authenticationToken);
 
-//        String account = (String) authc.getPrincipals().getPrimaryPrincipal();
-//        UserModel user = userService.getUserByAccount(account);
-//        SecurityUtils.getSubject().getSession().setAttribute("user", user);
+        String account = (String) authc.getPrincipals().getPrimaryPrincipal();
+        UserModel user = userService.getUserByAccount(account);
+        SecurityUtils.getSubject().getSession().setAttribute("userId", user.getId());
 
         return authc;
     }

@@ -53,14 +53,14 @@ public class UserDaoImpl implements UserDao {
 
     public UserModel getUserByAccount(String account) {
         StringBuffer sb = new StringBuffer();
-        sb.append("select * from plat_user where login_name = ?");
+        sb.append("select * from sys_user where login_name = ?");
         sb.append(" and del_flag = 0");
         return getUser(sb.toString(), account);
     }
 
     public UserModel getUserById(String userId) {
         StringBuffer sb = new StringBuffer();
-        sb.append("select * from plat_user where id = ?");
+        sb.append("select * from sys_user where id = ?");
         sb.append(" and del_flag = 0");
         return getUser(sb.toString(), userId);
     }
@@ -69,7 +69,7 @@ public class UserDaoImpl implements UserDao {
         Connection con = null;
         PreparedStatement ps = null;
         StringBuffer sb = new StringBuffer();
-        sb.append("update plat_user set ");
+        sb.append("update sys_user set ");
         if (user.getDel_flag() != 0) {
             sb.append(" del_flag = 1");
         }
@@ -129,7 +129,7 @@ public class UserDaoImpl implements UserDao {
         Connection con = null;
         PreparedStatement ps = null;
         StringBuffer sb = new StringBuffer();
-        sb.append("insert into plat_user (id,login_name,password,name,mobile,create_date,create_by,parent_id) values (?,?,?,?,?,?,?,?)");
+        sb.append("insert into sys_user (id,login_name,password,name,mobile,create_date,create_by,parent_id) values (?,?,?,?,?,?,?,?)");
 
         try {
             con = sqlConnectionFactory.getConnection();
@@ -162,7 +162,7 @@ public class UserDaoImpl implements UserDao {
         UserModel user = new UserModel();
         StringBuffer sb = new StringBuffer();
 
-        sb.append("select id from plat_user where login_name = ? and password = ? and del_flag = 0");
+        sb.append("select id from sys_user where login_name = ? and password = ? and del_flag = 0");
         try {
             con = sqlConnectionFactory.getConnection();
             ps = con.prepareStatement(sb.toString());
@@ -187,7 +187,7 @@ public class UserDaoImpl implements UserDao {
         List<UserModel> userList = new ArrayList<UserModel>();
         StringBuffer sb = new StringBuffer();
 
-        sb.append("select * from plat_user where parent_id = ? and del_flag = 0");
+        sb.append("select * from sys_user where parent_id = ? and del_flag = 0");
         try {
             con = sqlConnectionFactory.getConnection();
             ps = con.prepareStatement(sb.toString());
