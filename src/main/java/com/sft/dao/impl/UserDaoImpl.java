@@ -35,6 +35,8 @@ public class UserDaoImpl implements UserDao {
             rs = ps.executeQuery();
             while (rs.next()) {
                 user.setId(rs.getString("id"));
+                user.setParent_id(rs.getString("parent_id"));
+                user.setParent_id_set(rs.getString("parent_id_set"));
                 user.setName(rs.getString("name"));
                 user.setEmail(rs.getString("email"));
                 user.setPhone(rs.getString("phone"));
@@ -108,7 +110,6 @@ public class UserDaoImpl implements UserDao {
         }
         sb.append(" where login_name = ?");
 
-        UserModel changeUser = null;
         try {
             con = sqlConnectionFactory.getConnection();
             ps = con.prepareStatement(sb.toString());
@@ -129,7 +130,7 @@ public class UserDaoImpl implements UserDao {
         Connection con = null;
         PreparedStatement ps = null;
         StringBuffer sb = new StringBuffer();
-        sb.append("insert into sys_user (id,login_name,password,name,mobile,create_date,create_by,parent_id) values (?,?,?,?,?,?,?,?)");
+        sb.append("insert into sys_user (id,login_name,password,name,mobile,create_date,create_by,parent_id,parent_id_set) values (?,?,?,?,?,?,?,?,?)");
 
         try {
             con = sqlConnectionFactory.getConnection();
@@ -142,6 +143,7 @@ public class UserDaoImpl implements UserDao {
             ps.setString(6, DateUtil.getCurDate());
             ps.setString(7, user.getCreate_by());
             ps.setString(8, user.getParent_id());
+            ps.setString(9, user.getParent_id_set());
 
             int result = ps.executeUpdate();
             if (result > 0) {
@@ -159,7 +161,6 @@ public class UserDaoImpl implements UserDao {
         Connection con = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        UserModel user = new UserModel();
         StringBuffer sb = new StringBuffer();
 
         sb.append("select id from sys_user where login_name = ? and password = ? and del_flag = 0");
@@ -180,28 +181,29 @@ public class UserDaoImpl implements UserDao {
         return false;
     }
 
-    public List<UserModel> getSubUserById(String userId) {
+    private List<UserModel> getUserList(String sql, String key) {
         Connection con = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
         List<UserModel> userList = new ArrayList<UserModel>();
-        StringBuffer sb = new StringBuffer();
 
-        sb.append("select * from sys_user where parent_id = ? and del_flag = 0");
         try {
             con = sqlConnectionFactory.getConnection();
-            ps = con.prepareStatement(sb.toString());
-            ps.setString(1, userId);
+            ps = con.prepareStatement(sql);
+            ps.setString(1, key);
             rs = ps.executeQuery();
             while (rs.next()) {
                 UserModel user = new UserModel();
-                user.setLogin_name(rs.getString("login_name"));
-                user.setLogin_date(rs.getString("login_date"));
-                user.setLogin_ip(rs.getString("login_ip"));
-                user.setMobile(rs.getString("mobile"));
-                user.setPhone(rs.getString("phone"));
-                user.setEmail(rs.getString("email"));
+                user.setId(rs.getString("id"));
+                user.setParent_id(rs.getString("parent_id"));
+                user.setParent_id_set(rs.getString("parent_id_set"));
                 user.setName(rs.getString("name"));
+                user.setEmail(rs.getString("email"));
+                user.setPhone(rs.getString("phone"));
+                user.setMobile(rs.getString("mobile"));
+                user.setLogin_ip(rs.getString("login_ip"));
+                user.setLogin_date(rs.getString("login_date"));
+                user.setLogin_name(rs.getString("login_name"));
 
                 userList.add(user);
             }
@@ -211,5 +213,15 @@ public class UserDaoImpl implements UserDao {
             sqlConnectionFactory.closeConnetion(con, ps, rs);
         }
         return userList;
+    }
+
+    public List<UserModel> getSubUserById(String userId) {
+        String sql = "select * from sys_user where parent_id = ? and del_flag = 0";
+        return getUserList(sql, userId);
+    }
+
+    public List<UserModel> getAllSubUserById(String userId) {
+        String sql = "select * from sys_user where parent_id_set like %\" + userId + \"% and del_flag = 0";
+        return getUserList(sql, userId);
     }
 }

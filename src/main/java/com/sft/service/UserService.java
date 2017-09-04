@@ -54,4 +54,12 @@ public interface UserService {
      * @return
      */
     public List<UserModel> getSubUserById(String userId);
+
+    /**
+     * 获取用户的子用户
+     *
+     * @param userId
+     * @return
+     */
+    public List<UserModel> getAllSubUserById(String userId);
 }

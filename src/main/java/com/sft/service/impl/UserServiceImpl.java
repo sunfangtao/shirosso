@@ -64,4 +64,11 @@ public class UserServiceImpl implements UserService {
         }
         return null;
     }
+
+    public List<UserModel> getAllSubUserById(String userId) {
+        if (StringUtils.hasText(userId)) {
+            return userDao.getAllSubUserById(userId);
+        }
+        return null;
+    }
 }
