@@ -1,7 +1,7 @@
 package com.sft.controller;
 
 import com.sft.service.FilterChainDefinitionsService;
-import com.sft.util.SendJSONUtil;
+import com.sft.util.SendAppJSONUtil;
 import org.apache.shiro.cache.Cache;
 import org.apache.shiro.cache.ehcache.EhCacheManager;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,7 +28,7 @@ public class CacheUpdateController {
         try {
             String account = req.getParameter("account");
             clearAuthorizationInfo(account);
-            String returnJson = SendJSONUtil.getNormalString("授权信息刷新成功!");
+            String returnJson = SendAppJSONUtil.getNormalString("授权信息刷新成功!");
             res.setCharacterEncoding("UTF-8");
             res.getWriter().write(returnJson);
         } catch (Exception e) {
@@ -46,7 +46,7 @@ public class CacheUpdateController {
     public void resourceCache(HttpServletRequest req, HttpServletResponse res) {
         try {
             filterChainDefinitionsService.reloadFilterChains();
-            String returnJson = SendJSONUtil.getNormalString("资源权限更新成功!");
+            String returnJson = SendAppJSONUtil.getNormalString("资源权限更新成功!");
             res.setCharacterEncoding("UTF-8");
             res.getWriter().write(returnJson);
         } catch (Exception e) {

@@ -35,6 +35,14 @@ public class RolePermissionServiceImpl implements RolePermissionService {
         return rolePermissionDao.getRoles(userId);
     }
 
+    public List<Role> getRoles(int page, int pageSize) {
+        return rolePermissionDao.getRoles(page, pageSize);
+    }
+
+    public int getRoleCount() {
+        return rolePermissionDao.getRoleCount();
+    }
+
     public boolean updateRole(Role role) {
         if (role == null) {
             return false;
@@ -80,6 +88,14 @@ public class RolePermissionServiceImpl implements RolePermissionService {
             return rolePermissionDao.getPermissions(userId);
         }
         return null;
+    }
+
+    public List<Permission> getPermissions(int page, int pageSize) {
+        return rolePermissionDao.getPermissions(page, pageSize);
+    }
+
+    public int getPermissionCount() {
+        return rolePermissionDao.getPermissionCount();
     }
 
     public List<String> getRolePermissions(String roleId) {

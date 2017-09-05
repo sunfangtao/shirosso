@@ -22,11 +22,11 @@ public class PagingUtil {
 
 	public static int getPage(HttpServletRequest req) {
 		String page = req.getParameter("page");
-		int numPage = 0;
+		int numPage = 1;
 		try {
 			numPage = Integer.parseInt(page);
-			if (numPage <= 0) {
-				numPage = 0;
+			if (numPage <= 1) {
+				numPage = 1;
 			}
 		} catch (Exception e) {
 			//logger.info("没有page参数或格式错误");

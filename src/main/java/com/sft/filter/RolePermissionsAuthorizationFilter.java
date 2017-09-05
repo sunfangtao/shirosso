@@ -1,7 +1,7 @@
 package com.sft.filter;
 
 import com.sft.util.CloudError;
-import com.sft.util.SendJSONUtil;
+import com.sft.util.SendAppJSONUtil;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.StringUtils;
 import org.apache.shiro.web.filter.authz.PermissionsAuthorizationFilter;
@@ -20,7 +20,7 @@ public class RolePermissionsAuthorizationFilter extends PermissionsAuthorization
             this.saveRequestAndRedirectToLogin(request, response);
         } else {
             if (request instanceof HttpServletRequest && isAjaxRequest((HttpServletRequest) request)) {
-                String returnJson = SendJSONUtil.getFailResultObject(CloudError.ReasonEnum.PERMISSION.getValue(), "您没有足够的权限执行该操作!");
+                String returnJson = SendAppJSONUtil.getFailResultObject(CloudError.ReasonEnum.PERMISSION.getValue(), "您没有足够的权限执行该操作!");
                 response.setCharacterEncoding("UTF-8");
                 response.setContentType("application/json; charset=utf-8");
                 response.getWriter().write(returnJson);

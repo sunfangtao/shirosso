@@ -83,6 +83,61 @@ public class RolePermissionDaoImpl implements RolePermissionDao {
         return false;
     }
 
+    public List<Role> getRoles(int page, int pageSize) {
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        List<Role> rolesList = new ArrayList<Role>();
+        StringBuffer sb = new StringBuffer();
+
+        sb.append("select * from role limit ");
+        sb.append((page-1) * pageSize).append(",").append(pageSize);
+
+        try {
+            con = sqlConnectionFactory.getConnection();
+            ps = con.prepareStatement(sb.toString());
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                Role role = new Role();
+                role.setId(rs.getString("id"));
+                role.setName(rs.getString("name"));
+                role.setRemarks(rs.getString("remarks"));
+                role.setCreate_by(rs.getString("create_by"));
+                role.setCreate_date(rs.getString("create_date"));
+                role.setDel_flag(rs.getInt("del_flag"));
+                rolesList.add(role);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            sqlConnectionFactory.closeConnetion(con, ps, rs);
+        }
+        return rolesList;
+    }
+
+    public int getRoleCount() {
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        StringBuffer sb = new StringBuffer();
+
+        sb.append("select count(1) as count from role");
+
+        try {
+            con = sqlConnectionFactory.getConnection();
+            ps = con.prepareStatement(sb.toString());
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                return rs.getInt("count");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            sqlConnectionFactory.closeConnetion(con, ps, rs);
+        }
+        return 0;
+    }
+
     public List<Role> getRoles(String userId) {
         Connection con = null;
         PreparedStatement ps = null;
@@ -311,6 +366,33 @@ public class RolePermissionDaoImpl implements RolePermissionDao {
                 "where r.id = ur.role_id and ur.user_id = u.id and u.id = ? and u.del_flag = 0 and r.del_flag = 0)");
         sb.append(" and rp.permission_id = p.id and p.del_flag = 0");
         return getPermissions(sb.toString(), userId);
+    }
+
+    public List<Permission> getPermissions(int page, int pageSize) {
+        return null;
+    }
+
+    public int getPermissionCount() {
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        StringBuffer sb = new StringBuffer();
+
+        sb.append("select count(1) as count from permission");
+
+        try {
+            con = sqlConnectionFactory.getConnection();
+            ps = con.prepareStatement(sb.toString());
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                return rs.getInt("count");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            sqlConnectionFactory.closeConnetion(con, ps, rs);
+        }
+        return 0;
     }
 
     public List<String> getRolePermissions(String roleId) {

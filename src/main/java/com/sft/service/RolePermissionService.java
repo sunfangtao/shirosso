@@ -24,6 +24,20 @@ public interface RolePermissionService {
     public List<Role> getRoles(String userId);
 
     /**
+     * 获取所有角色
+     *
+     * @return
+     */
+    public List<Role> getRoles(int page, int pageSize);
+
+    /**
+     * 获取角色数目
+     *
+     * @return
+     */
+    public int getRoleCount();
+
+    /**
      * 更新角色
      *
      * @param role
@@ -65,6 +79,20 @@ public interface RolePermissionService {
      * @return
      */
     public List<String> getPermissions(String userId);
+
+    /**
+     * 获取所有权限
+     *
+     * @return
+     */
+    public List<Permission> getPermissions(int page, int pageSize);
+
+    /**
+     * 获取权限数目
+     *
+     * @return
+     */
+    public int getPermissionCount();
 
     /**
      * 获取角色的权限

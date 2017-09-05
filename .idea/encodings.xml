@@ -4,7 +4,7 @@
     <file url="file://$PROJECT_DIR$" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java/com/sft/controller/CacheUpdateController.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java/com/sft/realm/ShiroSSORealm.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/sft/util/SendJSONUtil.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/sft/util/SendAppJSONUtil.java" charset="UTF-8" />
     <file url="PROJECT" charset="UTF-8" />
   </component>
 </project>

@@ -6,7 +6,7 @@ import com.google.gson.JsonObject;
 import java.util.List;
 import java.util.Map;
 
-public class SendJSONUtil {
+public class SendAppJSONUtil {
 
     private static class Json {
         public Object array;
@@ -16,6 +16,7 @@ public class SendJSONUtil {
     private static class PageJson {
         public int page;
         public int pageSize;
+        public int count;
         public Object array;
         public Object info;
     }
@@ -35,12 +36,13 @@ public class SendJSONUtil {
      * @param object
      * @return
      */
-    public static String getPageJsonString(int page, int pageSize, Object object) {
+    public static String getPageJsonString(int page, int pageSize, int count, Object object) {
 
         PageJson data = new PageJson();
-        if (page > 0 && pageSize > 0) {
+        if (page >= 0 && pageSize > 0 && count > 0) {
             data.page = page;
             data.pageSize = pageSize;
+            data.count = count;
         }
         data.array = object;
 
@@ -98,12 +100,12 @@ public class SendJSONUtil {
         return new Gson().toJson(returnJson);
     }
 
-	/**
-	 * 查询结果为空返回的json
-	 *
-	 * @return
-	 */
-	public static String getNullResultObject() {
+    /**
+     * 查询结果为空返回的json
+     *
+     * @return
+     */
+    public static String getNullResultObject() {
         ReturnJson returnJson = new ReturnJson();
         returnJson.result = CloudError.ResultEnum.FAIL.getValue();
         returnJson.type = CloudError.ReasonEnum.NODATA.getValue();
@@ -111,16 +113,16 @@ public class SendJSONUtil {
         returnJson.data = "{}";
 
         return new Gson().toJson(returnJson);
-	}
+    }
 
-	/**
-	 * 一般失败返回的json
-	 *
-	 * @param type
-	 * @param message
-	 * @return
-	 */
-	public static String getFailResultObject(String type, String message) {
+    /**
+     * 一般失败返回的json
+     *
+     * @param type
+     * @param message
+     * @return
+     */
+    public static String getFailResultObject(String type, String message) {
         ReturnJson returnJson = new ReturnJson();
         returnJson.result = CloudError.ResultEnum.FAIL.getValue();
         returnJson.type = type;
@@ -128,14 +130,14 @@ public class SendJSONUtil {
         returnJson.data = "{}";
 
         return new Gson().toJson(returnJson);
-	}
+    }
 
-	/**
-	 * 服务器异常返回的json
-	 *
-	 * @return
-	 */
-	public static String getServerExceptionResultObject() {
+    /**
+     * 服务器异常返回的json
+     *
+     * @return
+     */
+    public static String getServerExceptionResultObject() {
         ReturnJson returnJson = new ReturnJson();
         returnJson.result = CloudError.ResultEnum.FAIL.getValue();
         returnJson.type = CloudError.ReasonEnum.SERVEREXCEPTION.getValue();
@@ -143,5 +145,5 @@ public class SendJSONUtil {
         returnJson.data = "{}";
 
         return new Gson().toJson(returnJson);
-	}
+    }
 }
