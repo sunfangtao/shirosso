@@ -60,10 +60,10 @@ public class RolePermissionDaoImpl implements RolePermissionDao {
             sb.append(" del_flag = 0");
         }
         if (role.getName() != null) {
-            sb.append(" name = '").append(role.getName()).append("'");
+            sb.append(", name = '").append(role.getName()).append("'");
         }
         if (role.getRemarks() != null) {
-            sb.append(" and remarks = '").append(role.getRemarks()).append("'");
+            sb.append(", remarks = '").append(role.getRemarks()).append("'");
         }
         sb.append(" where id = ?");
 
