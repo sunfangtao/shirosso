@@ -14,6 +14,17 @@ public class Permission {
     private String url;//'链接地址',
     private String type;//'链接映射标识'
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Permission) {
+            Permission permission = (Permission) obj;
+            if (permission.id.equals(id)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public String getId() {
         return id;
     }

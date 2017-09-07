@@ -8,6 +8,7 @@ package com.sft.realm;
 
 import com.sft.model.Role;
 import com.sft.model.UserModel;
+import com.sft.model.bean.RoleBean;
 import com.sft.service.RolePermissionService;
 import com.sft.service.UserService;
 import org.apache.shiro.SecurityUtils;
@@ -45,7 +46,7 @@ public class ShiroSSORealm extends CasRealm {
             if (permissions != null) {
                 authorizationInfo.addStringPermissions(permissions);
             }
-            List<Role> roles = rolePermissionService.getRoles(account);
+            List<RoleBean> roles = rolePermissionService.getRoles(account);
             if (roles != null) {
                 List<String> roleNameList = new ArrayList<String>();
                 for (Role role : roles) {

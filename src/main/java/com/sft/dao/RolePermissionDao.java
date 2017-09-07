@@ -2,8 +2,11 @@ package com.sft.dao;
 
 import com.sft.model.Permission;
 import com.sft.model.Role;
+import com.sft.model.bean.PermissionBean;
+import com.sft.model.bean.RoleBean;
 
 import java.util.List;
+import java.util.Map;
 
 public interface RolePermissionDao {
 
@@ -28,14 +31,14 @@ public interface RolePermissionDao {
      *
      * @return
      */
-    public List<Role> getRoles(int page, int pageSize);
+    public List<RoleBean> getRoles(Map<String, String> whereMap, int page, int pageSize);
 
     /**
      * 获取角色数目
      *
      * @return
      */
-    public int getRoleCount();
+    public int getRoleCount(Map<String, String> whereMap);
 
     /**
      * 获取用户的角色
@@ -43,7 +46,7 @@ public interface RolePermissionDao {
      * @param userId
      * @return
      */
-    public List<Role> getRoles(String userId);
+    public List<RoleBean> getRoles(String userId);
 
     /**
      * 更新用户角色
@@ -92,14 +95,14 @@ public interface RolePermissionDao {
      *
      * @return
      */
-    public List<Permission> getPermissions(int page, int pageSize);
+    public List<PermissionBean> getPermissions(Map<String, String> whereMap, int page, int pageSize);
 
     /**
      * 获取权限数目
      *
      * @return
      */
-    public int getPermissionCount();
+    public int getPermissionCount(Map<String, String> whereMap);
 
     /**
      * 获取角色的权限
@@ -115,12 +118,12 @@ public interface RolePermissionDao {
      * @param roleId
      * @return
      */
-    public List<Permission> getRolePermissionsList(String roleId);
+    public List<PermissionBean> getRolePermissionsList(String roleId);
 
     /**
      * 获取资源权限
      *
      * @return
      */
-    public List<Permission> getUrlPermissions();
+    public List<PermissionBean> getUrlPermissions();
 }

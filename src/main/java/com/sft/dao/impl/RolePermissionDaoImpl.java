@@ -5,7 +5,10 @@ import com.sft.dao.RolePermissionDao;
 import com.sft.db.SqlConnectionFactory;
 import com.sft.model.Permission;
 import com.sft.model.Role;
+import com.sft.model.bean.PermissionBean;
+import com.sft.model.bean.RoleBean;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.shiro.util.StringUtils;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
@@ -15,6 +18,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class RolePermissionDaoImpl implements RolePermissionDao {
@@ -83,28 +87,42 @@ public class RolePermissionDaoImpl implements RolePermissionDao {
         return false;
     }
 
-    public List<Role> getRoles(int page, int pageSize) {
+    public List<RoleBean> getRoles(Map<String, String> whereMap, int page, int pageSize) {
         Connection con = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        List<Role> rolesList = new ArrayList<Role>();
+        List<RoleBean> rolesList = new ArrayList<RoleBean>();
         StringBuffer sb = new StringBuffer();
 
-        sb.append("select * from role limit ");
-        sb.append((page-1) * pageSize).append(",").append(pageSize);
-
+        sb.append("select r.*,u.name as create_name from role r,sys_user u where u.id = r.create_by");
+        if (whereMap != null) {
+            String del_flag = whereMap.get("del_flag");
+            if ("0".equals(del_flag) || "1".equals(del_flag)) {
+                sb.append(" and r.del_flag = ").append(del_flag);
+            }
+            String name = whereMap.get("name");
+            if (StringUtils.hasText(name)) {
+                sb.append(" and r.name = '").append(name).append("'");
+            }
+        }
+        sb.append(" order by r.create_date desc");
+        if (page > 0 && pageSize > 0) {
+            sb.append(" limit ");
+            sb.append((page - 1) * pageSize).append(",").append(pageSize);
+        }
         try {
             con = sqlConnectionFactory.getConnection();
             ps = con.prepareStatement(sb.toString());
             rs = ps.executeQuery();
             while (rs.next()) {
-                Role role = new Role();
+                RoleBean role = new RoleBean();
                 role.setId(rs.getString("id"));
                 role.setName(rs.getString("name"));
                 role.setRemarks(rs.getString("remarks"));
                 role.setCreate_by(rs.getString("create_by"));
                 role.setCreate_date(rs.getString("create_date"));
                 role.setDel_flag(rs.getInt("del_flag"));
+                role.setCreate_name(rs.getString("create_name"));
                 rolesList.add(role);
             }
         } catch (Exception e) {
@@ -115,13 +133,27 @@ public class RolePermissionDaoImpl implements RolePermissionDao {
         return rolesList;
     }
 
-    public int getRoleCount() {
+    public int getRoleCount(Map<String, String> whereMap) {
         Connection con = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
         StringBuffer sb = new StringBuffer();
 
         sb.append("select count(1) as count from role");
+        if (whereMap != null) {
+            String del_flag = whereMap.get("del_flag");
+            if ("0".equals(del_flag) || "1".equals(del_flag)) {
+                sb.append(" where del_flag = ").append(del_flag);
+            }
+            String name = whereMap.get("name");
+            if (StringUtils.hasText(name)) {
+                if (sb.toString().contains("where")) {
+                    sb.append(" and name = '").append(name).append("'");
+                } else {
+                    sb.append(" where name = '").append(name).append("'");
+                }
+            }
+        }
 
         try {
             con = sqlConnectionFactory.getConnection();
@@ -138,14 +170,14 @@ public class RolePermissionDaoImpl implements RolePermissionDao {
         return 0;
     }
 
-    public List<Role> getRoles(String userId) {
+    public List<RoleBean> getRoles(String userId) {
         Connection con = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        List<Role> rolesList = new ArrayList<Role>();
+        List<RoleBean> rolesList = new ArrayList<RoleBean>();
         StringBuffer sb = new StringBuffer();
 
-        sb.append("select r.id,r.name,r.remarks from role r,user_role ur,plat_user u where r.id = ur.role_id and ur.user_id = u.id and u.id = ?");
+        sb.append("select r.*,u.name as create_name from role r,user_role ur,sys_user u where r.id = ur.role_id and ur.user_id = u.id and u.id = ?");
         sb.append(" and u.del_flag = 0 and r.del_flag = 0");
         try {
             con = sqlConnectionFactory.getConnection();
@@ -153,10 +185,14 @@ public class RolePermissionDaoImpl implements RolePermissionDao {
             ps.setString(1, userId);
             rs = ps.executeQuery();
             while (rs.next()) {
-                Role role = new Role();
+                RoleBean role = new RoleBean();
                 role.setId(rs.getString("id"));
                 role.setName(rs.getString("name"));
                 role.setRemarks(rs.getString("remarks"));
+                role.setCreate_by(rs.getString("create_by"));
+                role.setCreate_date(rs.getString("create_date"));
+                role.setDel_flag(rs.getInt("del_flag"));
+                role.setCreate_name(rs.getString("create_name"));
                 rolesList.add(role);
             }
         } catch (Exception e) {
@@ -368,18 +404,115 @@ public class RolePermissionDaoImpl implements RolePermissionDao {
         return getPermissions(sb.toString(), userId);
     }
 
-    public List<Permission> getPermissions(int page, int pageSize) {
-        return null;
+    public List<PermissionBean> getPermissions(Map<String, String> whereMap, int page, int pageSize) {
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        List<PermissionBean> permissionsList = new ArrayList<PermissionBean>();
+
+        StringBuffer sb = new StringBuffer();
+        sb.append("select p.*,sm.name as module from permission p,server_module sm where sm.id = p.module_id");
+        if (whereMap != null) {
+            String del_flag = whereMap.get("del_flag");
+            if ("0".equals(del_flag) || "1".equals(del_flag)) {
+                sb.append(" and p.del_flag = ").append(del_flag);
+            }
+            String name = whereMap.get("name");
+            if (StringUtils.hasText(name)) {
+                sb.append(" and p.name like %").append(name).append("%");
+            }
+            String url = whereMap.get("url");
+            if (StringUtils.hasText(url)) {
+                sb.append(" and p.url like %").append(url).append("%");
+            }
+            String type = whereMap.get("type");
+            if (StringUtils.hasText(type)) {
+                sb.append(" and p.type like %").append(type).append("%");
+            }
+            String permission = whereMap.get("permission");
+            if (StringUtils.hasText(permission)) {
+                sb.append(" and p.permission like %").append(permission).append("%");
+            }
+        }
+        sb.append(" order by p.create_date desc");
+        if (page > 0 && pageSize > 0) {
+            sb.append(" limit ");
+            sb.append((page - 1) * pageSize).append(",").append(pageSize);
+        }
+
+        try {
+            con = sqlConnectionFactory.getConnection();
+            ps = con.prepareStatement(sb.toString());
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                PermissionBean permission = new PermissionBean();
+                permission.setRemarks(rs.getString("remarks"));
+                permission.setModule_id(rs.getString("module_id"));
+                permission.setName(rs.getString("name"));
+                permission.setId(rs.getString("id"));
+                permission.setPermission(rs.getString("permission"));
+                permission.setModule(rs.getString("module"));
+                permission.setCreate_date(rs.getString("create_date"));
+                permission.setUrl(rs.getString("url"));
+                permission.setType(rs.getString("type"));
+                permissionsList.add(permission);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            sqlConnectionFactory.closeConnetion(con, ps, rs);
+        }
+        return permissionsList;
     }
 
-    public int getPermissionCount() {
+    public int getPermissionCount(Map<String, String> whereMap) {
         Connection con = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
         StringBuffer sb = new StringBuffer();
 
         sb.append("select count(1) as count from permission");
+        if (whereMap != null) {
+            String del_flag = whereMap.get("del_flag");
+            if ("0".equals(del_flag) || "1".equals(del_flag)) {
+                sb.append(" where and p.del_flag = ").append(del_flag);
+            }
+            String name = whereMap.get("name");
+            if (StringUtils.hasText(name)) {
+                if(sb.toString().contains("where")) {
+                    sb.append(" and p.name like %").append(name).append("%");
+                }else{
+                    sb.append(" where p.name like %").append(name).append("%");
+                }
+            }
 
+            String url = whereMap.get("url");
+            if (StringUtils.hasText(url)) {
+                if(sb.toString().contains("where")) {
+                    sb.append(" and p.url like %").append(url).append("%");
+                }else{
+                    sb.append(" where p.url like %").append(url).append("%");
+                }
+            }
+
+            String type = whereMap.get("type");
+            if (StringUtils.hasText(type)) {
+                if(sb.toString().contains("where")) {
+                    sb.append(" and p.type like %").append(type).append("%");
+                }else{
+                    sb.append(" where p.type like %").append(type).append("%");
+                }
+            }
+
+            String permission = whereMap.get("permission");
+            if (StringUtils.hasText(permission)) {
+                if(sb.toString().contains("where")) {
+                    sb.append(" and p.permission like %").append(permission).append("%");
+                }else{
+                    sb.append(" where p.permission like %").append(permission).append("%");
+                }
+            }
+        }
         try {
             con = sqlConnectionFactory.getConnection();
             ps = con.prepareStatement(sb.toString());
@@ -402,14 +535,14 @@ public class RolePermissionDaoImpl implements RolePermissionDao {
         return getPermissions(sb.toString(), roleId);
     }
 
-    public List<Permission> getRolePermissionsList(String roleId) {
+    public List<PermissionBean> getRolePermissionsList(String roleId) {
         Connection con = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        List<Permission> permissionsList = new ArrayList<Permission>();
+        List<PermissionBean> permissionsList = new ArrayList<PermissionBean>();
 
         StringBuffer sb = new StringBuffer();
-        sb.append("select p.permission,p.remarks,p.module_id,p.name,p.id from role_permission rp,permission p where rp.role_id = ?");
+        sb.append("select p.*,sm.name as module from role_permission rp,permission p,server_module sm where sm.id = p.module_id and rp.role_id = ?");
         sb.append(" and rp.permission_id = p.id and p.del_flag = 0");
         try {
             con = sqlConnectionFactory.getConnection();
@@ -417,12 +550,14 @@ public class RolePermissionDaoImpl implements RolePermissionDao {
             ps.setString(1, roleId);
             rs = ps.executeQuery();
             while (rs.next()) {
-                Permission permission = new Permission();
+                PermissionBean permission = new PermissionBean();
                 permission.setRemarks(rs.getString("remarks"));
                 permission.setModule_id(rs.getString("module_id"));
                 permission.setName(rs.getString("name"));
                 permission.setId(rs.getString("id"));
                 permission.setPermission(rs.getString("permission"));
+                permission.setModule(rs.getString("module"));
+                permission.setHas(true);
                 permissionsList.add(permission);
             }
         } catch (Exception e) {
@@ -455,18 +590,18 @@ public class RolePermissionDaoImpl implements RolePermissionDao {
         return permissionsList;
     }
 
-    public List<Permission> getUrlPermissions() {
+    public List<PermissionBean> getUrlPermissions() {
         Connection con = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        List<Permission> permissionsList = new ArrayList<Permission>();
+        List<PermissionBean> permissionsList = new ArrayList<PermissionBean>();
         String sql = "select permission,url from permission where del_flag = 0";
         try {
             con = sqlConnectionFactory.getConnection();
             ps = con.prepareStatement(sql);
             rs = ps.executeQuery();
             while (rs.next()) {
-                Permission permission = new Permission();
+                PermissionBean permission = new PermissionBean();
                 permission.setPermission(rs.getString("permission"));
                 permission.setUrl(rs.getString("url"));
                 permissionsList.add(permission);

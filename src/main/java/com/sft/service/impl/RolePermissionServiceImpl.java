@@ -3,6 +3,8 @@ package com.sft.service.impl;
 import com.sft.dao.RolePermissionDao;
 import com.sft.model.Permission;
 import com.sft.model.Role;
+import com.sft.model.bean.PermissionBean;
+import com.sft.model.bean.RoleBean;
 import com.sft.service.RolePermissionService;
 import com.sft.util.DateUtil;
 import org.apache.shiro.util.StringUtils;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Repository
@@ -31,16 +34,16 @@ public class RolePermissionServiceImpl implements RolePermissionService {
         return rolePermissionDao.addRole(role);
     }
 
-    public List<Role> getRoles(String userId) {
+    public List<RoleBean> getRoles(String userId) {
         return rolePermissionDao.getRoles(userId);
     }
 
-    public List<Role> getRoles(int page, int pageSize) {
-        return rolePermissionDao.getRoles(page, pageSize);
+    public List<RoleBean> getRoles(Map<String, String> whereMap, int page, int pageSize) {
+        return rolePermissionDao.getRoles(whereMap, page, pageSize);
     }
 
-    public int getRoleCount() {
-        return rolePermissionDao.getRoleCount();
+    public int getRoleCount(Map<String, String> whereMap) {
+        return rolePermissionDao.getRoleCount(whereMap);
     }
 
     public boolean updateRole(Role role) {
@@ -90,12 +93,12 @@ public class RolePermissionServiceImpl implements RolePermissionService {
         return null;
     }
 
-    public List<Permission> getPermissions(int page, int pageSize) {
-        return rolePermissionDao.getPermissions(page, pageSize);
+    public List<PermissionBean> getPermissions(Map<String, String> whereMap, int page, int pageSize) {
+        return rolePermissionDao.getPermissions(whereMap, page, pageSize);
     }
 
-    public int getPermissionCount() {
-        return rolePermissionDao.getPermissionCount();
+    public int getPermissionCount(Map<String, String> whereMap) {
+        return rolePermissionDao.getPermissionCount(whereMap);
     }
 
     public List<String> getRolePermissions(String roleId) {
@@ -105,14 +108,14 @@ public class RolePermissionServiceImpl implements RolePermissionService {
         return null;
     }
 
-    public List<Permission> getRolePermissionsList(String roleId) {
+    public List<PermissionBean> getRolePermissionsList(String roleId) {
         if (StringUtils.hasText(roleId)) {
             return rolePermissionDao.getRolePermissionsList(roleId);
         }
         return null;
     }
 
-    public List<Permission> getUrlPermissions() {
+    public List<PermissionBean> getUrlPermissions() {
         return rolePermissionDao.getUrlPermissions();
     }
 
