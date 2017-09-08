@@ -7,6 +7,7 @@ public class Module {
     private String create_date;// '创建日期',
     private int del_flag;// '删除标记',
     private String address;// 服务器地址
+    private String remarks;
 
     public String getId() {
         return id;
@@ -54,5 +55,13 @@ public class Module {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
     }
 }

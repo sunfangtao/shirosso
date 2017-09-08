@@ -20,7 +20,7 @@ public class SendPlatJSONUtil {
     public static String getPageJsonString(int code, String message, int count, Object object) {
 
         ReturnJson returnJson = new ReturnJson();
-        //returnJson.code = code;
+        returnJson.code = code;
         returnJson.msg = message;
         returnJson.count = count;
         returnJson.data = object;

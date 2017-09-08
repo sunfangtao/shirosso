@@ -98,6 +98,13 @@ public interface RolePermissionDao {
     public List<PermissionBean> getPermissions(Map<String, String> whereMap, int page, int pageSize);
 
     /**
+     * 获取所有权限
+     *
+     * @return
+     */
+    public List<PermissionBean> getPermissions();
+
+    /**
      * 获取权限数目
      *
      * @return

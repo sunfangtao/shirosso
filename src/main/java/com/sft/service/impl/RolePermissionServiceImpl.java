@@ -86,6 +86,15 @@ public class RolePermissionServiceImpl implements RolePermissionService {
         return rolePermissionDao.addPermission(permission);
     }
 
+    public boolean updatePermission(Permission permission, String by) {
+        if (permission == null) {
+            return false;
+        }
+        permission.setUpdate_by(by);
+        permission.setUpdate_date(DateUtil.getCurDate());
+        return rolePermissionDao.updatePermission(permission);
+    }
+
     public List<String> getPermissions(String userId) {
         if (StringUtils.hasText(userId)) {
             return rolePermissionDao.getPermissions(userId);
@@ -95,6 +104,10 @@ public class RolePermissionServiceImpl implements RolePermissionService {
 
     public List<PermissionBean> getPermissions(Map<String, String> whereMap, int page, int pageSize) {
         return rolePermissionDao.getPermissions(whereMap, page, pageSize);
+    }
+
+    public List<PermissionBean> getPermissions() {
+        return rolePermissionDao.getPermissions();
     }
 
     public int getPermissionCount(Map<String, String> whereMap) {

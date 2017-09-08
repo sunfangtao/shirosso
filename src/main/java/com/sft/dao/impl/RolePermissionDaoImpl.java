@@ -27,7 +27,6 @@ public class RolePermissionDaoImpl implements RolePermissionDao {
     private SqlConnectionFactory sqlConnectionFactory;
 
     public boolean addRole(Role role) {
-        String s = "";
         Connection con = null;
         PreparedStatement ps = null;
         StringBuffer sb = new StringBuffer();
@@ -287,19 +286,23 @@ public class RolePermissionDaoImpl implements RolePermissionDao {
     public boolean updateRolePermission(String roleId, List<String> permissionId) {
         Connection con = null;
         PreparedStatement ps = null;
+
+        String sql = "delete from role_permission where role_id = '" + roleId + "'";
         StringBuffer sb = new StringBuffer();
         sb.append("insert into role_permission (role_id,permission_id) values ");
 
         int length = permissionId.size();
         for (int i = 0; i < length; i++) {
-            sb.append("(").append(roleId).append(",");
-            sb.append(permissionId.get(i)).append(")");
+            sb.append("('").append(roleId).append("','");
+            sb.append(permissionId.get(i)).append("')");
             if (i < length - 1) {
                 sb.append(",");
             }
         }
         try {
             con = sqlConnectionFactory.getConnection();
+            ps = con.prepareStatement(sql);
+            ps.executeUpdate();
             ps = con.prepareStatement(sb.toString());
             int result = ps.executeUpdate();
             if (result > 0) {
@@ -350,30 +353,35 @@ public class RolePermissionDaoImpl implements RolePermissionDao {
         Connection con = null;
         PreparedStatement ps = null;
         StringBuffer sb = new StringBuffer();
-        sb.append("update permission set ");
+        sb.append("update permission set");
         if (permission.getDel_flag() != 0) {
             sb.append(" del_flag = 1");
+        } else {
+            sb.append(" del_flag = 0");
+        }
+        if (permission.getModule_id() != null) {
+            sb.append(", module_id = '").append(permission.getModule_id()).append("'");
         }
         if (permission.getName() != null) {
-            sb.append(" name = '").append(permission.getName()).append("'");
+            sb.append(", name = '").append(permission.getName()).append("'");
         }
         if (permission.getRemarks() != null) {
-            sb.append(" and remarks = '").append(permission.getRemarks()).append("'");
+            sb.append(", remarks = '").append(permission.getRemarks()).append("'");
         }
         if (permission.getType() != null) {
-            sb.append(" and type = '").append(permission.getType()).append("'");
+            sb.append(", type = '").append(permission.getType()).append("'");
         }
         if (permission.getUrl() != null) {
-            sb.append(" and url = '").append(permission.getUrl()).append("'");
+            sb.append(", url = '").append(permission.getUrl()).append("'");
         }
         if (permission.getUpdate_by() != null) {
-            sb.append(" and update_by = '").append(permission.getUpdate_by()).append("'");
+            sb.append(", update_by = '").append(permission.getUpdate_by()).append("'");
         }
         if (permission.getUpdate_date() != null) {
-            sb.append(" and update_date = '").append(permission.getUpdate_date()).append("'");
+            sb.append(", update_date = '").append(permission.getUpdate_date()).append("'");
         }
         if (permission.getPermission() != null) {
-            sb.append(" and permission = '").append(permission.getPermission()).append("'");
+            sb.append(", permission = '").append(permission.getPermission()).append("'");
         }
         sb.append(" where id = ?");
 
@@ -411,7 +419,7 @@ public class RolePermissionDaoImpl implements RolePermissionDao {
         List<PermissionBean> permissionsList = new ArrayList<PermissionBean>();
 
         StringBuffer sb = new StringBuffer();
-        sb.append("select p.*,sm.name as module from permission p,server_module sm where sm.id = p.module_id");
+        sb.append("select p.*,s.name as module from permission p,sub_server s where s.id = p.module_id");
         if (whereMap != null) {
             String del_flag = whereMap.get("del_flag");
             if ("0".equals(del_flag) || "1".equals(del_flag)) {
@@ -455,6 +463,43 @@ public class RolePermissionDaoImpl implements RolePermissionDao {
                 permission.setCreate_date(rs.getString("create_date"));
                 permission.setUrl(rs.getString("url"));
                 permission.setType(rs.getString("type"));
+                permission.setDel_flag(rs.getInt("del_flag"));
+                permissionsList.add(permission);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            sqlConnectionFactory.closeConnetion(con, ps, rs);
+        }
+        return permissionsList;
+    }
+
+    public List<PermissionBean> getPermissions() {
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        List<PermissionBean> permissionsList = new ArrayList<PermissionBean>();
+
+        StringBuffer sb = new StringBuffer();
+        sb.append("select p.*,s.name as module from permission p,sub_server s where s.id = p.module_id");
+        sb.append(" and p.del_flag = 0");
+
+        try {
+            con = sqlConnectionFactory.getConnection();
+            ps = con.prepareStatement(sb.toString());
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                PermissionBean permission = new PermissionBean();
+                permission.setRemarks(rs.getString("remarks"));
+                permission.setModule_id(rs.getString("module_id"));
+                permission.setName(rs.getString("name"));
+                permission.setId(rs.getString("id"));
+                permission.setPermission(rs.getString("permission"));
+                permission.setModule(rs.getString("module"));
+                permission.setCreate_date(rs.getString("create_date"));
+                permission.setUrl(rs.getString("url"));
+                permission.setType(rs.getString("type"));
+                permission.setDel_flag(rs.getInt("del_flag"));
                 permissionsList.add(permission);
             }
         } catch (Exception e) {
@@ -475,41 +520,41 @@ public class RolePermissionDaoImpl implements RolePermissionDao {
         if (whereMap != null) {
             String del_flag = whereMap.get("del_flag");
             if ("0".equals(del_flag) || "1".equals(del_flag)) {
-                sb.append(" where and p.del_flag = ").append(del_flag);
+                sb.append(" where del_flag = ").append(del_flag);
             }
             String name = whereMap.get("name");
             if (StringUtils.hasText(name)) {
-                if(sb.toString().contains("where")) {
-                    sb.append(" and p.name like %").append(name).append("%");
-                }else{
-                    sb.append(" where p.name like %").append(name).append("%");
+                if (sb.toString().contains("where")) {
+                    sb.append(" and name like %").append(name).append("%");
+                } else {
+                    sb.append(" where name like %").append(name).append("%");
                 }
             }
 
             String url = whereMap.get("url");
             if (StringUtils.hasText(url)) {
-                if(sb.toString().contains("where")) {
-                    sb.append(" and p.url like %").append(url).append("%");
-                }else{
-                    sb.append(" where p.url like %").append(url).append("%");
+                if (sb.toString().contains("where")) {
+                    sb.append(" and url like %").append(url).append("%");
+                } else {
+                    sb.append(" where url like %").append(url).append("%");
                 }
             }
 
             String type = whereMap.get("type");
             if (StringUtils.hasText(type)) {
-                if(sb.toString().contains("where")) {
-                    sb.append(" and p.type like %").append(type).append("%");
-                }else{
-                    sb.append(" where p.type like %").append(type).append("%");
+                if (sb.toString().contains("where")) {
+                    sb.append(" and type like %").append(type).append("%");
+                } else {
+                    sb.append(" where type like %").append(type).append("%");
                 }
             }
 
             String permission = whereMap.get("permission");
             if (StringUtils.hasText(permission)) {
-                if(sb.toString().contains("where")) {
-                    sb.append(" and p.permission like %").append(permission).append("%");
-                }else{
-                    sb.append(" where p.permission like %").append(permission).append("%");
+                if (sb.toString().contains("where")) {
+                    sb.append(" and permission like %").append(permission).append("%");
+                } else {
+                    sb.append(" where permission like %").append(permission).append("%");
                 }
             }
         }

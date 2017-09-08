@@ -76,6 +76,14 @@ public interface RolePermissionService {
     public boolean addPermission(Permission permission);
 
     /**
+     * 更新权限信息
+     *
+     * @param permission
+     * @return
+     */
+    public boolean updatePermission(Permission permission, String by);
+
+    /**
      * 获取用户的权限
      *
      * @param userId
@@ -89,6 +97,13 @@ public interface RolePermissionService {
      * @return
      */
     public List<PermissionBean> getPermissions(Map<String, String> whereMap, int page, int pageSize);
+
+    /**
+     * 获取所有权限(分配角色权限使用)
+     *
+     * @return
+     */
+    public List<PermissionBean> getPermissions();
 
     /**
      * 获取权限数目
