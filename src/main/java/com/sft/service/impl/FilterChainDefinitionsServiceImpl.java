@@ -1,7 +1,7 @@
 package com.sft.service.impl;
 
 import com.sft.chain.ShiroPermissionFactory;
-import com.sft.dao.RolePermissionDao;
+import com.sft.dao.PermissionDao;
 import com.sft.model.bean.PermissionBean;
 import com.sft.service.FilterChainDefinitionsService;
 import org.apache.shiro.util.StringUtils;
@@ -26,7 +26,7 @@ public class FilterChainDefinitionsServiceImpl implements FilterChainDefinitions
     @Autowired
     private ShiroPermissionFactory permissFactory;
     @Resource
-    private RolePermissionDao rolePermissionDao;
+    private PermissionDao permissionDao;
 
     public void reloadFilterChains() {
 
@@ -44,7 +44,7 @@ public class FilterChainDefinitionsServiceImpl implements FilterChainDefinitions
                 // 重新设置权限
                 permissFactory.setFilterChainDefinitions(ShiroPermissionFactory.definition);// 传入配置中的filterchains
 
-                List<PermissionBean> permissions = rolePermissionDao.getUrlPermissions();
+                List<PermissionBean> permissions = permissionDao.getUrlPermissions();
                 // 循环Resource的url,逐个添加到section中。section就是filterChainDefinitionMap,
                 // 里面的键就是链接URL,值就是存在什么条件才能访问该链接
 

@@ -160,6 +160,12 @@
         <filters>
             <filter>src/main/filters/filter-${env}.properties</filter>
         </filters>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
     </build>
 
     <!-- 指明编译源代码时使用的字符编码,通过project.build.sourceEncoding属性设置字符编码，告诉maven这个项目使用UTF-8来编译 -->
@@ -174,9 +180,6 @@
             <properties>
                 <env>develop</env>
             </properties>
-            <activation>
-                <activeByDefault>true</activeByDefault><!--默认启用的是dev环境配置-->
-            </activation>
         </profile>
         <!-- 生产环境 -->
         <profile>
@@ -191,6 +194,9 @@
             <properties>
                 <env>test</env>
             </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault><!--默认启用的是dev环境配置-->
+            </activation>
         </profile>
     </profiles>
 </project>

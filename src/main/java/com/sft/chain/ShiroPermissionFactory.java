@@ -1,7 +1,7 @@
 package com.sft.chain;
 
 import com.sft.model.bean.PermissionBean;
-import com.sft.service.RolePermissionService;
+import com.sft.service.PermissionService;
 import org.apache.shiro.config.Ini;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.util.CollectionUtils;
@@ -15,7 +15,7 @@ import java.util.List;
 public class ShiroPermissionFactory extends ShiroFilterFactoryBean {
 
     @Autowired
-    private RolePermissionService rolePermissionService;
+    private PermissionService permissionService;
 
     public static String definition;
 
@@ -35,7 +35,7 @@ public class ShiroPermissionFactory extends ShiroFilterFactoryBean {
             section = ini.getSection("");
         }
 
-        List<PermissionBean> permissions = rolePermissionService.getUrlPermissions();
+        List<PermissionBean> permissions = permissionService.getUrlPermissions();
         // 循环Resource的url,逐个添加到section中。section就是filterChainDefinitionMap,
         // 里面的键就是链接URL,值就是存在什么条件才能访问该链接
         if (permissions != null) {

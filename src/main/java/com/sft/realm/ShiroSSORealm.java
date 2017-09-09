@@ -9,7 +9,8 @@ package com.sft.realm;
 import com.sft.model.Role;
 import com.sft.model.UserModel;
 import com.sft.model.bean.RoleBean;
-import com.sft.service.RolePermissionService;
+import com.sft.service.PermissionService;
+import com.sft.service.RoleService;
 import com.sft.service.UserService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
@@ -29,7 +30,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ShiroSSORealm extends CasRealm {
 
     @Resource
-    private RolePermissionService rolePermissionService;
+    private PermissionService permissionService;
+    @Resource
+    private RoleService roleService;
     @Resource
     private UserService userService;
 
@@ -42,11 +45,11 @@ public class ShiroSSORealm extends CasRealm {
         SimpleAuthorizationInfo authorizationInfo = null;
         if (authorizationInfo == null) {
             authorizationInfo = new SimpleAuthorizationInfo();
-            List<String> permissions = rolePermissionService.getPermissions(account);
+            List<String> permissions = permissionService.getPermissions(account);
             if (permissions != null) {
                 authorizationInfo.addStringPermissions(permissions);
             }
-            List<RoleBean> roles = rolePermissionService.getRoles(account);
+            List<RoleBean> roles = roleService.getRoles(account);
             if (roles != null) {
                 List<String> roleNameList = new ArrayList<String>();
                 for (Role role : roles) {
