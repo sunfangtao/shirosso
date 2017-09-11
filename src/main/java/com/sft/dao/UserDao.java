@@ -3,6 +3,7 @@ package com.sft.dao;
 import com.sft.model.UserModel;
 
 import java.util.List;
+import java.util.Map;
 
 public interface UserDao {
 
@@ -53,7 +54,7 @@ public interface UserDao {
      * @param userId
      * @return
      */
-    public List<UserModel> getSubUserById(String userId);
+    public List<UserModel> getSubUserById(Map<String, String> whereMap, String userId, int page, int pageSize);
 
     /**
      * 获取用户的子用户
@@ -61,6 +62,9 @@ public interface UserDao {
      * @param userId
      * @return
      */
-    public List<UserModel> getAllSubUserById(String userId);
+    public List<UserModel> getAllSubUserById(Map<String, String> whereMap, String userId, int page, int pageSize);
 
+    public int getSubUserCount(Map<String, String> whereMap, String userId);
+
+    public int getAllSubUserCount(Map<String, String> whereMap, String userId);
 }

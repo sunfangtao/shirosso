@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class UserServiceImpl implements UserService {
@@ -58,17 +59,25 @@ public class UserServiceImpl implements UserService {
         return userDao.verifyUser(account, password);
     }
 
-    public List<UserModel> getSubUserById(String userId) {
+    public List<UserModel> getSubUserById(Map<String, String> whereMap, String userId, int page, int pageSize) {
         if (StringUtils.hasText(userId)) {
-            return userDao.getSubUserById(userId);
+            return userDao.getSubUserById(whereMap, userId, page, pageSize);
         }
         return null;
     }
 
-    public List<UserModel> getAllSubUserById(String userId) {
+    public List<UserModel> getAllSubUserById(Map<String, String> whereMap, String userId, int page, int pageSize) {
         if (StringUtils.hasText(userId)) {
-            return userDao.getAllSubUserById(userId);
+            return userDao.getAllSubUserById(whereMap, userId, page, pageSize);
         }
         return null;
+    }
+
+    public int getSubUserCount(Map<String, String> whereMap, String userId) {
+        return userDao.getSubUserCount(whereMap, userId);
+    }
+
+    public int getAllSubUserCount(Map<String, String> whereMap, String userId) {
+        return userDao.getAllSubUserCount(whereMap, userId);
     }
 }
