@@ -11,6 +11,17 @@ public class Role {
     private String remarks;//'备注信息',
     private int del_flag;//'删除标记',
 
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof Role){
+            Role role = (Role) obj;
+            if(role.id.equals(id)){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public String getId() {
         return id;
     }

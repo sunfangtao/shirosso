@@ -19,7 +19,7 @@ public class RoleDaoImpl implements RoleDao {
 
     @Resource
     private SqlConnectionFactory sqlConnectionFactory;
-    
+
     public List<RoleBean> getRoles(String userId) {
         Connection con = null;
         PreparedStatement ps = null;
@@ -64,6 +64,7 @@ public class RoleDaoImpl implements RoleDao {
             con = sqlConnectionFactory.getConnection();
             con.setAutoCommit(false);
             ps = con.prepareStatement("select role_id from user_role where user_id = ?");
+            ps.setString(1, userId);
             rs = ps.executeQuery();
             while (rs.next()) {
                 oriRoleIdList.add(rs.getString("role_id"));
@@ -79,7 +80,9 @@ public class RoleDaoImpl implements RoleDao {
             if (addList == null) {
                 addList = new ArrayList<String>();
             }
-            if ((deleteLength = deleteList.size()) == 0 && (addLength = addList.size()) == 0) {
+            deleteLength = deleteList.size();
+            addLength = addList.size();
+            if (deleteLength == 0 && addLength == 0) {
                 return true;
             }
 
@@ -87,28 +90,47 @@ public class RoleDaoImpl implements RoleDao {
             StringBuffer sb = new StringBuffer();
             // 增加新的角色
             sb.append("insert into user_role (user_id,role_id,create_by,create_date) values ");
+            boolean isNotInsert = false;
             if (addLength > 0) {
                 for (int i = 0; i < addLength; i++) {
-                    sb.append("(").append(userId).append(",");
-                    sb.append(roleIdList.get(i)).append(",").append(by).append(",").append(time).append(")");
+                    sb.append("('").append(userId).append("','");
+                    sb.append(roleIdList.get(i)).append("','").append(by).append("','").append(time).append("')");
                     if (i < addLength - 1) {
                         sb.append(",");
                     }
+                    if (roleIdList.get(i).length() == 0) {
+                        isNotInsert = true;
+                        break;
+                    }
                 }
-                stm.addBatch(sb.toString());
+                if (!isNotInsert)
+                    stm.addBatch(sb.toString());
             }
 
             if (deleteLength > 0) {
                 // 删除角色
                 sb = new StringBuffer();
-                sb.append("delete from user_role ur,sys_user u where u.parent_id_set like %").append(userId).append("%");
-                sb.append(" and u.id = ur.user_id and ur.role_id in (");
+                sb.append("delete ur,u from user_role ur,sys_user u where u.parent_id_set like '%").append(userId).append("%'");
+                sb.append(" and u.id = ur.user_id and ur.role_id in ('");
                 for (int i = 0; i < deleteLength; i++) {
-                    sb.append(deleteList.get(i));
+                    sb.append(deleteList.get(i)).append("'");
                     if (i < deleteLength - 1) {
-                        sb.append(",");
+                        sb.append(",'");
                     }
                 }
+                sb.append(")");
+                stm.addBatch(sb.toString());
+
+                sb = new StringBuffer();
+                sb.append("delete from user_role where user_id = '").append(userId);
+                sb.append("' and role_id in ('");
+                for (int i = 0; i < deleteLength; i++) {
+                    sb.append(deleteList.get(i)).append("'");
+                    if (i < deleteLength - 1) {
+                        sb.append(",'");
+                    }
+                }
+                sb.append(")");
                 stm.addBatch(sb.toString());
             }
             int[] result = stm.executeBatch();

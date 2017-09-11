@@ -45,6 +45,9 @@ public class UserDaoImpl implements UserDao {
                 user.setLogin_ip(rs.getString("login_ip"));
                 user.setLogin_date(rs.getString("login_date"));
                 user.setLogin_name(rs.getString("login_name"));
+                user.setCreate_by(rs.getString("create_by"));
+                user.setCreate_date(rs.getString("create_date"));
+                user.setRemarks(rs.getString("remarks"));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -218,6 +221,9 @@ public class UserDaoImpl implements UserDao {
                 user.setLogin_ip(rs.getString("login_ip"));
                 user.setLogin_date(rs.getString("login_date"));
                 user.setLogin_name(rs.getString("login_name"));
+                user.setCreate_date(rs.getString("create_date"));
+                user.setCreate_by(rs.getString("create_by"));
+                user.setRemarks(rs.getString("remarks"));
 
                 userList.add(user);
             }
