@@ -20,4 +20,12 @@ public interface PermissionDao {
      * @return
      */
     public List<String> getPermissions(String userId);
+
+    /**
+     * 获取对应的url
+     *
+     * @param type
+     * @return
+     */
+    public String getUrlByType(String type);
 }

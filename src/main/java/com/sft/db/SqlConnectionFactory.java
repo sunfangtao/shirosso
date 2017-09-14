@@ -1,7 +1,6 @@
 package com.sft.db;
 
 import com.alibaba.druid.pool.DruidDataSource;
-import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,7 +12,7 @@ import java.sql.SQLException;
  *
  * @author sunfangtao
  */
-@Service
+
 public class SqlConnectionFactory {
 
     private DruidDataSource dataSource;

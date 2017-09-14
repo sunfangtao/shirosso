@@ -69,4 +69,29 @@ public class PermissionDaoImpl implements PermissionDao {
         }
         return permissionsList;
     }
+
+    public String getUrlByType(String type) {
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        StringBuffer sb = new StringBuffer();
+        sb.append("select p.url,s.address from permission p,sub_server s where type = ? and p.del_flag = 0");
+        sb.append(" and p.module_id = s.id and s.del_flag = 0");
+
+        try {
+            con = sqlConnectionFactory.getConnection();
+            ps = con.prepareStatement(sb.toString());
+            ps.setString(1, type);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                return (rs.getString("address") + rs.getString("url"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            sqlConnectionFactory.closeConnetion(con, ps, rs);
+        }
+        return null;
+    }
 }

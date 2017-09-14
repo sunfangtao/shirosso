@@ -20,4 +20,20 @@ public interface PermissionService {
      * @return
      */
     public List<String> getPermissions(String userId);
+
+    /**
+     * 获取对应的url
+     *
+     * @param type
+     * @return
+     */
+    public String getUrlByType(String type);
+
+    /**
+     * 更新Url
+     *
+     * @param type
+     * @param url
+     */
+    public void updateUrlByType(String type, String url);
 }
