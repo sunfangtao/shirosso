@@ -24,7 +24,7 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     public List<String> getPermissions(String userId) {
-        return null;
+        return permissionDao.getPermissions(userId);
     }
 
     public String getUrlByType(String type) {
@@ -32,7 +32,9 @@ public class PermissionServiceImpl implements PermissionService {
         if (StringUtils.hasText(url)) {
             return url;
         }
-        return permissionDao.getUrlByType(type);
+        url = permissionDao.getUrlByType(type);
+        urlMap.put(type, url);
+        return url;
     }
 
     public void updateUrlByType(String type, String url) {

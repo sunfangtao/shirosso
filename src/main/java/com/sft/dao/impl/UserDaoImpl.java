@@ -4,7 +4,6 @@ import com.sft.dao.UserDao;
 import com.sft.db.SqlConnectionFactory;
 import com.sft.model.UserModel;
 import com.sft.util.DateUtil;
-import com.sft.util.DefaultPasswordEncoder;
 import org.apache.shiro.util.StringUtils;
 import org.springframework.stereotype.Repository;
 
@@ -22,8 +21,6 @@ public class UserDaoImpl implements UserDao {
 
     @Resource
     private SqlConnectionFactory sqlConnectionFactory;
-    @Resource
-    private DefaultPasswordEncoder passwordEncoder;
 
     private UserModel getUser(String sql, String key) {
         Connection con = null;
@@ -140,7 +137,7 @@ public class UserDaoImpl implements UserDao {
             ps = con.prepareStatement(sb.toString());
             ps.setString(1, UUID.randomUUID().toString());
             ps.setString(2, user.getLogin_name());
-            ps.setString(3, passwordEncoder.encode(user.getPassword()));
+            ps.setString(3, user.getPassword());
             ps.setString(4, user.getName());
             ps.setString(5, DateUtil.getCurDate());
             ps.setString(6, user.getCreate_by());

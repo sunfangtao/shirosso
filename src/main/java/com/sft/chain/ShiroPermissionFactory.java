@@ -43,10 +43,14 @@ public class ShiroPermissionFactory extends ShiroFilterFactoryBean {
                 PermissionBean resource = it.next();
                 // 如果不为空值添加到section中
                 if (StringUtils.hasText(resource.getUrl()) && StringUtils.hasText(resource.getPermission())) {
+                    if (!resource.getUrl().startsWith("/")) {
+                        resource.setUrl("/" + resource.getUrl());
+                    }
                     section.put(resource.getUrl(), MessageFormat.format(PREMISSION_STRING, resource.getPermission()));
                 }
             }
         }
+        section.put("/uController/**", "anon");
         section.put("/**", "user");
         this.setFilterChainDefinitionMap(section);
     }

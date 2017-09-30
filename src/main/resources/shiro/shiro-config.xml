@@ -96,7 +96,7 @@
     <!-- session管理器 -->
     <bean id="sessionManager" class="org.apache.shiro.web.session.mgt.DefaultWebSessionManager">
         <!-- 超时时间 -->
-        <property name="globalSessionTimeout" value="3600000"/>
+        <property name="globalSessionTimeout" value="7200000"/>
         <!-- session存储的实现 -->
         <property name="sessionDAO" ref="shiroSessionDao"/>
         <!-- sessionIdCookie的实现,用于重写覆盖容器默认的JSESSIONID -->
@@ -122,7 +122,7 @@
     <!-- 定时清理僵尸session,shiro会启用一个后台守护线程定时执行清理操作 用户直接关闭浏览器造成的孤立会话-->
     <bean id="sessionValidationScheduler"
           class="org.apache.shiro.session.mgt.ExecutorServiceSessionValidationScheduler">
-        <property name="interval" value="3600000"/>
+        <property name="interval" value="7200000"/>
         <property name="sessionManager" ref="sessionManager"/>
     </bean>
 

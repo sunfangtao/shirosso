@@ -6,7 +6,6 @@
  */
 package com.sft.realm;
 
-import com.sft.credential.RetryLimitHashedCredentialsMatcher;
 import com.sft.model.Role;
 import com.sft.model.UserModel;
 import com.sft.model.bean.RoleBean;
@@ -21,9 +20,7 @@ import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.cas.CasRealm;
-import org.apache.shiro.session.mgt.SessionManager;
 import org.apache.shiro.subject.PrincipalCollection;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -35,10 +32,6 @@ public class ShiroSSORealm extends CasRealm {
 
     private static Logger logger = Logger.getLogger(ShiroSSORealm.class);
 
-    @Resource
-    private RetryLimitHashedCredentialsMatcher retryLimitHashedCredentialsMatcher;
-    @Autowired
-    private SessionManager sessionManager;
     @Resource
     private PermissionService permissionService;
     @Resource
@@ -52,14 +45,15 @@ public class ShiroSSORealm extends CasRealm {
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
 
         String account = (String) principalCollection.getPrimaryPrincipal();
+        String userId = userService.getUserByAccount(account).getId();
         SimpleAuthorizationInfo authorizationInfo = null;
         if (authorizationInfo == null) {
             authorizationInfo = new SimpleAuthorizationInfo();
-            List<String> permissions = permissionService.getPermissions(account);
+            List<String> permissions = permissionService.getPermissions(userId);
             if (permissions != null) {
                 authorizationInfo.addStringPermissions(permissions);
             }
-            List<RoleBean> roles = roleService.getRoles(account);
+            List<RoleBean> roles = roleService.getRoles(userId);
             if (roles != null) {
                 List<String> roleNameList = new ArrayList<String>();
                 for (Role role : roles) {

@@ -39,7 +39,7 @@ public class PermissionDaoImpl implements PermissionDao {
         } finally {
             sqlConnectionFactory.closeConnetion(con, ps, rs);
         }
-        return null;
+        return permissionsList;
     }
 
     public List<String> getPermissions(String userId) {
@@ -50,7 +50,7 @@ public class PermissionDaoImpl implements PermissionDao {
 
         StringBuffer sb = new StringBuffer();
         sb.append("select p.permission from role_permission rp,permission p where ");
-        sb.append("rp.role_id = (select r.id from role r,user_role ur,plat_user u " +
+        sb.append("rp.role_id in (select r.id from role r,user_role ur,sys_user u " +
                 "where r.id = ur.role_id and ur.user_id = u.id and u.id = ? and u.del_flag = 0 and r.del_flag = 0)");
         sb.append(" and rp.permission_id = p.id and p.del_flag = 0");
 
