@@ -9,6 +9,7 @@
     <url>http://maven.apache.org</url>
 
     <distributionManagement>
+        <downloadUrl> </downloadUrl>
         <repository>
             <id>nexus-releases</id>
             <url>http://221.0.91.34:5081/nexus/content/repositories/releases/</url>

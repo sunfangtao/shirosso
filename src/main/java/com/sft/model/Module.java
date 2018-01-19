@@ -8,6 +8,7 @@ public class Module {
     private int del_flag;// '删除标记',
     private String address;// 服务器地址
     private String remarks;
+    private String isDirect;
 
     public String getId() {
         return id;
@@ -63,5 +64,13 @@ public class Module {
 
     public void setRemarks(String remarks) {
         this.remarks = remarks;
+    }
+
+    public String getIsDirect() {
+        return isDirect;
+    }
+
+    public void setIsDirect(String isDirect) {
+        this.isDirect = isDirect;
     }
 }
