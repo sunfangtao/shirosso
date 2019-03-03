@@ -7,6 +7,7 @@
     <!-- Shiro 的Web过滤器 -->
     <!--1、与web.xml对应的bean -->
     <bean id="shiroFilter" class="com.sft.chain.ShiroPermissionFactory">
+        <property name="userRolePermissionsInterface" ref="userRolePermissionsService"/>
         <property name="securityManager" ref="securityManager"/>
         <!-- 如果没有认证将要跳转的登陆地址，http可访问的url，如果不在表单认证过虑器FormAuthenticationFilter中指定此地址就为身份认证地址 -->
         <property name="loginUrl" value="${shiro-sso.loginUrl}"/>
@@ -15,12 +16,12 @@
         <property name="filters">
             <map>
                 <entry key="perms">
-                    <bean class="com.sft.filter.RolePermissionsAuthorizationFilter"/>
+                    <bean class="com.sft.filter.RolePermissionsAuthorizationFilter">
+                        <property name="noPermissionService" ref="noPermissionHandler"/>
+                    </bean>
                 </entry>
                 <!-- 添加casFilter到shiroFilter -->
                 <entry key="casFilter" value-ref="casFilter"/>
-                <entry key="logoutFilter" value-ref="logoutFilter"/>
-                <!--<entry key="authc" value-ref="authcFilter"/>-->
             </map>
         </property>
 
@@ -43,15 +44,12 @@
         <!-- user org.apache.shiro.web.filter.authz.UserFilter表示必须存在用户,当登入操作时不做检查-->
         <property name="filterChainDefinitions">
             <value>
-                <!--/appLogin = authcFilter-->
-                /ssoLogin = casFilter
+                /login = casFilter
                 /logout = logoutFilter
             </value>
         </property>
 
     </bean>
-
-    <bean id="authcFilter" class="com.sft.filter.PasswordShiroFilter"/>
 
     <bean id="casFilter" class="org.apache.shiro.cas.CasFilter">
         <!-- 配置验证成功是的URL -->
@@ -89,6 +87,8 @@
         <property name="authenticationCacheName" value="authenticationCache"/>
         <property name="authorizationCachingEnabled" value="true"/>
         <property name="authorizationCacheName" value="authorizationCache"/>
+
+        <property name="userRolePermissionsInterface" ref="userRolePermissionsService"/>
     </bean>
 
     <bean id="casSubjectFactory" class="org.apache.shiro.cas.CasSubjectFactory"></bean>

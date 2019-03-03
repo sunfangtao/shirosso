@@ -1,9 +1,26 @@
 package com.sft.util;
 
+import org.apache.zookeeper.ZooKeeper;
+
+import java.util.List;
+
 /**
  * 平台上的错误信息
  */
 public class CloudError {
+
+    public static void main(String[] args) {
+        try {
+            ZooKeeper zooKeeper = new ZooKeeper("221.0.91.34:2181,10.100.15.107:2081,192.168.100.105:2281", 6000, null);
+//            zooKeeper.delete("/permission",-1);
+            List<String> list = zooKeeper.getChildren("/", null);
+            for (String key : list) {
+                System.out.println(key);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * 返回结果
@@ -11,7 +28,8 @@ public class CloudError {
     public enum ResultEnum {
 
         SUCCESS("success"),
-        FAIL("fail"),;
+        FAIL("fail"),
+        ;
 
         private String value;
 
@@ -28,17 +46,12 @@ public class CloudError {
      * Json返回的类型
      */
     public enum ReasonEnum {
-        REPEAT("RepeatException"),
         NODATA("NoDataException"),
-        SQLEXCEPTION("SqlException"),
         SERVEREXCEPTION("ServerException"),
         NORMAL("Normal"),
         PERMISSION("Permission"),
-        NOTLOGIN("NoLogin"),
-        PASSWORDERROR("PasswordErrorException"),
-        NOACCOUNT("UnkonwAccountException"),
-        NOREQUIREPARAMS("NoRequireParams"),
-        IOException("IOException");
+        NOREQUIREPARAMS("NoRequireParams");
+
         private String value;
 
         ReasonEnum(String value) {

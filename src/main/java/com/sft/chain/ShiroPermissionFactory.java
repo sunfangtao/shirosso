@@ -1,12 +1,12 @@
 package com.sft.chain;
 
-import com.sft.model.bean.PermissionBean;
-import com.sft.service.PermissionService;
+import com.sft.bean.UrlPermissionBean;
+import com.sft.service.UserRolePermissionsInterface;
 import org.apache.shiro.config.Ini;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.util.CollectionUtils;
 import org.apache.shiro.util.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.shiro.web.config.IniFilterChainResolverFactory;
 
 import java.text.MessageFormat;
 import java.util.Iterator;
@@ -14,12 +14,15 @@ import java.util.List;
 
 public class ShiroPermissionFactory extends ShiroFilterFactoryBean {
 
-    @Autowired
-    private PermissionService permissionService;
-
     public static String definition;
 
     public static final String PREMISSION_STRING = "perms[\"{0}\"]";
+
+    private UserRolePermissionsInterface userRolePermissionsInterface;
+
+    public void setUserRolePermissionsInterface(UserRolePermissionsInterface userRolePermissionsInterface) {
+        this.userRolePermissionsInterface = userRolePermissionsInterface;
+    }
 
     /**
      * 初始化设置过滤链
@@ -30,23 +33,23 @@ public class ShiroPermissionFactory extends ShiroFilterFactoryBean {
         // 加载配置默认的过滤链
         Ini ini = new Ini();
         ini.load(definitions);
-        Ini.Section section = ini.getSection("urls");
+        Ini.Section section = ini.getSection(IniFilterChainResolverFactory.URLS);
         if (CollectionUtils.isEmpty(section)) {
             section = ini.getSection("");
         }
 
-        List<PermissionBean> permissions = permissionService.getUrlPermissions();
+        List<UrlPermissionBean> permissions = userRolePermissionsInterface.getUrlPermissions();
         // 循环Resource的url,逐个添加到section中。section就是filterChainDefinitionMap,
         // 里面的键就是链接URL,值就是存在什么条件才能访问该链接
         if (permissions != null) {
-            for (Iterator<PermissionBean> it = permissions.iterator(); it.hasNext(); ) {
-                PermissionBean resource = it.next();
+            for (Iterator<UrlPermissionBean> it = permissions.iterator(); it.hasNext(); ) {
+                UrlPermissionBean resource = it.next();
                 // 如果不为空值添加到section中
-                if (StringUtils.hasText(resource.getUrl()) && StringUtils.hasText(resource.getPermission())) {
-                    if (!resource.getUrl().startsWith("/")) {
-                        resource.setUrl("/" + resource.getUrl());
+                if (StringUtils.hasText(resource.url) && StringUtils.hasText(resource.permission)) {
+                    if (!resource.url.startsWith("/")) {
+                        resource.url = "/" + resource.url;
                     }
-                    section.put(resource.getUrl(), MessageFormat.format(PREMISSION_STRING, resource.getPermission()));
+                    section.put(resource.url, MessageFormat.format(PREMISSION_STRING, resource.permission));
                 }
             }
         }
