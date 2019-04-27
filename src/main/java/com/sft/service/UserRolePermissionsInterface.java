@@ -2,6 +2,8 @@ package com.sft.service;
 
 import com.sft.bean.UrlPermissionBean;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 public interface UserRolePermissionsInterface {
@@ -44,4 +46,10 @@ public interface UserRolePermissionsInterface {
      */
     public List<String> getAnonUrl();
 
+    /**
+     * 用户没有认证或没有权限的处理
+     *
+     * @param ex
+     */
+    public String doResolveException(Exception ex);
 }

@@ -15,11 +15,11 @@
         <!-- 声明自定义的过滤器 -->
         <property name="filters">
             <map>
-                <entry key="perms">
-                    <bean class="com.sft.filter.RolePermissionsAuthorizationFilter">
-                        <property name="noPermissionService" ref="noPermissionHandler"/>
-                    </bean>
-                </entry>
+                <!--<entry key="perms">-->
+                    <!--<bean class="com.sft.filter.RolePermissionsAuthorizationFilter">-->
+                        <!--<property name="noPermissionService" ref="noPermissionHandler"/>-->
+                    <!--</bean>-->
+                <!--</entry>-->
                 <!-- 添加casFilter到shiroFilter -->
                 <entry key="casFilter" value-ref="casFilter"/>
             </map>

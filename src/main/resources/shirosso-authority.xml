@@ -12,4 +12,8 @@
 
     <!-- shiro配置 -->
     <import resource="classpath:shiro/shirosso-config.xml"/>
+
+    <bean class="com.sft.service.ShiroSimpleMappingExceptionResolver">
+        <property name="userRolePermissionsInterface" ref="userRolePermissionsService"/>
+    </bean>
 </beans>
