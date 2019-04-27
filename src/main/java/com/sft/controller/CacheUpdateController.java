@@ -4,6 +4,7 @@ import com.sft.service.FilterChainDefinitionsService;
 import com.sft.util.SendAppJSONUtil;
 import org.apache.shiro.cache.Cache;
 import org.apache.shiro.cache.ehcache.EhCacheManager;
+import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
@@ -60,7 +61,15 @@ public class CacheUpdateController {
     private void clearAuthorizationInfo(String userName) {
         if (userName != null) {
             Cache<Object, Object> cache = shiroCacheManager.getCache("authorizationCache");
-            cache.remove(userName);
+            for (Object key : cache.keys()) {
+                if (key instanceof SimplePrincipalCollection) {
+                    SimplePrincipalCollection collection = (SimplePrincipalCollection) key;
+                    if (userName.equals(collection.getPrimaryPrincipal().toString())) {
+                        cache.remove(collection);
+                        break;
+                    }
+                }
+            }
         } else {
             Cache<Object, Object> cache = shiroCacheManager.getCache("authorizationCache");
             cache.clear();

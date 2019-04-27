@@ -37,4 +37,11 @@ public interface UserRolePermissionsInterface {
      */
     public List<String> getPermissions(String account);
 
+    /**
+     * 指定不需要认证就可以访问的接口
+     *
+     * @return
+     */
+    public List<String> getAnonUrl();
+
 }

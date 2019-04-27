@@ -23,7 +23,6 @@ public class RolePermissionsAuthorizationFilter extends PermissionsAuthorization
         if (subject.getPrincipal() == null) {
             this.saveRequestAndRedirectToLogin(request, response);
         } else {
-            System.out.println("3333333333333333333333333333333  noPermissionService=" + noPermissionService);
             if (noPermissionService == null || !noPermissionService.onHandleAccessDenied(request, response)) {
                 String unauthorizedUrl = this.getUnauthorizedUrl();
                 if (StringUtils.hasText(unauthorizedUrl)) {

@@ -53,6 +53,12 @@ public class ShiroPermissionFactory extends ShiroFilterFactoryBean {
                 }
             }
         }
+
+        if (userRolePermissionsInterface.getAnonUrl() != null) {
+            for (String url : userRolePermissionsInterface.getAnonUrl()) {
+                section.put(url, "anon");
+            }
+        }
         section.put("/uController/**", "anon");
         section.put("/**", "user");
         this.setFilterChainDefinitionMap(section);
