@@ -50,21 +50,17 @@ public class ShiroSSORealm extends CasRealm {
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
-
         // TODO 获取用户的唯一信息
         String account = (String) principalCollection.getPrimaryPrincipal();
         String userId = userRolePermissionsInterface.getUserId(account);
-        SimpleAuthorizationInfo authorizationInfo = null;
-        if (authorizationInfo == null) {
-            authorizationInfo = new SimpleAuthorizationInfo();
-            List<String> permissions = userRolePermissionsInterface.getPermissions(userId);
-            if (permissions != null) {
-                authorizationInfo.addStringPermissions(permissions);
-            }
-            List<String> roles = userRolePermissionsInterface.getRoles(userId);
-            if (roles != null) {
-                authorizationInfo.addRoles(roles);
-            }
+        SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
+        List<String> permissions = userRolePermissionsInterface.getPermissions(userId);
+        if (permissions != null) {
+            authorizationInfo.addStringPermissions(permissions);
+        }
+        List<String> roles = userRolePermissionsInterface.getRoles(userId);
+        if (roles != null) {
+            authorizationInfo.addRoles(roles);
         }
         return authorizationInfo;
     }

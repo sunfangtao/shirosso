@@ -4,6 +4,9 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+    <!--<bean name="casSingleSignOutFilter" class="org.jasig.cas.client.session.SingleSignOutFilter">-->
+        <!--&lt;!&ndash;<property name="casServerUrlPrefix" value="${shiro-sso.cas.serverUrlPrefix}"/>&ndash;&gt;-->
+    <!--</bean>-->
     <!-- Shiro 的Web过滤器 -->
     <!--1、与web.xml对应的bean -->
     <bean id="shiroFilter" class="com.sft.chain.ShiroPermissionFactory">
@@ -44,8 +47,10 @@
         <!-- user org.apache.shiro.web.filter.authz.UserFilter表示必须存在用户,当登入操作时不做检查-->
         <property name="filterChainDefinitions">
             <value>
-                /login = casFilter
+                <!--/cas = casSingleSignOutFilter-->
+                /cas = casFilter
                 /logout = logoutFilter
+                <!--/casLogout = casLogoutFilter-->
             </value>
         </property>
 
@@ -68,7 +73,7 @@
         <property name="realm" ref="shiroDbRealm"/>
         <property name="subjectFactory" ref="casSubjectFactory"></property>
         <!-- session 管理器 -->
-        <property name="sessionManager" ref="sessionManager"/>
+        <!--<property name="sessionManager" ref="sessionManager"/>-->
         <!--<property name="rememberMeManager" ref="rememberMeManager"/>-->
         <!-- 缓存管理器 认证由子服务器管理,权限由redis管理-->
         <property name="cacheManager" ref="shiroCacheManager"/>
